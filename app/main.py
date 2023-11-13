@@ -89,16 +89,16 @@ def find_index_converse(id):
     return None
 
 
-@app.get("/", status_code=status.HTTP_201_CREATED)
-async def root():
-    print(f'Be Good\nDoing Good\nBy Acting Good ¡!¡:')
-    return {"message": f"Be Good Doing Good By Acting Good ¡!¡\n{conversations_datas}\n¡!¡"}
-
-
 # Function to generate LLM response
 def generate_llm_response(user_message):
     # Assuming 'conversation' is initialized as a ChatOpenAI object
     return conversation.predict(input=user_message)
+
+
+@app.get("/", status_code=status.HTTP_201_CREATED)
+async def root():
+    print(f'Be Good\nDoing Good\nBy Acting Good ¡!¡:')
+    return {f"Be Good Doing Good By Acting Good ¡!¡:"}
 
 
 @app.post("/conversation", status_code=status.HTTP_201_CREATED)
