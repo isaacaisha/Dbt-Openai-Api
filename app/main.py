@@ -1,7 +1,9 @@
 import openai
 from fastapi import FastAPI, Response, status, HTTPException
+from psycopg2.extras import RealDictCursor
 from pydantic import BaseModel
 from typing import Optional
+import time
 
 from dotenv import load_dotenv, find_dotenv
 import os
@@ -14,6 +16,7 @@ from langchain.memory import ConversationBufferMemory
 from flask_wtf import FlaskForm
 from wtforms import SubmitField, TextAreaField, validators
 import secrets
+
 
 app = FastAPI()
 
@@ -48,8 +51,20 @@ class Memory(BaseModel):
 
 # Heroku provides the DATABASE_URL environment variable
 DATABASE_URL = os.environ['DATABASE_URL']
-conn = psycopg2.connect(DATABASE_URL, sslmode='require')
-cursor = conn.cursor()
+# conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+
+
+while True:
+    try:
+        conn = psycopg2.connect(host=os.environ['host'], port=5432, database=os.environ['database'],
+                                user=os.environ['user'],
+                                password=os.environ['password'])
+        cursor = conn.cursor()
+        print(f'Database connection was succesfull 😎\n')
+        break
+    except Exception as error:
+        print(f'Connecting to database failed:\nError: {error} 😭\n')
+        time.sleep(3)
 
 # Create OMR table
 cursor.execute("""
@@ -97,8 +112,7 @@ def generate_llm_response(user_message):
 
 @app.get("/", status_code=status.HTTP_201_CREATED)
 async def root():
-    print(f'Be Good\nDoing Good\nBy Acting Good ¡!¡:')
-    return {f"Be Good Doing Good By Acting Good ¡!¡:"}
+    return {"message: Be Good Doing Good By Acting Good ¡!¡": conversations_datas}
 
 
 @app.post("/conversation", status_code=status.HTTP_201_CREATED)
@@ -112,9 +126,6 @@ def start_conversation(omr: Memory):
 
     memory.save_context({"input": f"Summarize the whole {conversations_datas}:"}, {"output": f"{memory_load}"})
 
-    # Log the conversation to the database
-    conn = psycopg2.connect(DATABASE_URL, sslmode='require')
-    cursor = conn.cursor()
     cursor.execute(
         """
         INSERT INTO OMR (user_message, llm_response, conversations_summary, created_at) VALUES (%s, %s, %s, now())
@@ -132,7 +143,6 @@ def start_conversation(omr: Memory):
     conversation_dict = {
         "user_message": user_message,
         "llm_response": llm_response,
-        "conversations_summary": conversations_datas,
         "published": True,
         "created_at": created_at.strftime('%Y-%m-%d %H:%M:%S') if created_at else None,
         "id": conversation_id
@@ -143,8 +153,7 @@ def start_conversation(omr: Memory):
 
 @app.get("/conversation-summary", status_code=status.HTTP_201_CREATED)
 def get_conversation_summary():
-    print(f'conversation_summary:\n{conversations_datas}')
-    return {f"conversation_summary": conversations_datas}
+    return {f"conversation_summary": conversations_datas[:3]}
 
 
 @app.get("/conversation_by_id/{id}", status_code=status.HTTP_201_CREATED)
