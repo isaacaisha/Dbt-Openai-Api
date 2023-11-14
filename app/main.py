@@ -151,6 +151,11 @@ def start_conversation(omr: Memory):
     return {"conversation": conversation_dict}
 
 
+@app.get("/audio", status_code=status.HTTP_201_CREATED)
+async def audio_response():
+    return {"message: Be Good Doing Good By Acting Good ¡!¡": conversations_datas[-1:]}
+
+
 @app.get("/conversation-summary", status_code=status.HTTP_201_CREATED)
 def get_conversation_summary():
     return {f"conversation_summary": conversations_datas[:3]}
