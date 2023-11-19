@@ -1,5 +1,5 @@
 import openai
-from fastapi import FastAPI, Response, status, HTTPException
+from fastapi import FastAPI, Response, status, HTTPException, Depends
 from psycopg2.extras import RealDictCursor
 from pydantic import BaseModel
 from typing import Optional
@@ -17,10 +17,16 @@ from flask_wtf import FlaskForm
 from wtforms import SubmitField, TextAreaField, validators
 import secrets
 
+from sqlalchemy.orm import Session
+from . import models
+from .database import engine, get_db
+
+_ = load_dotenv(find_dotenv())
+
+models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-_ = load_dotenv(find_dotenv())
 
 openai.api_key = os.environ['OPENAI_API_KEY']
 # Generate a random secret key
@@ -50,17 +56,18 @@ class Memory(BaseModel):
 
 
 # Heroku provides the DATABASE_URL environment variable
-DATABASE_URL = os.environ['DATABASE_URL']
+# DATABASE_URL = os.environ['DATABASE_URL']
 # conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 
 
 while True:
     try:
-        conn = psycopg2.connect(host=os.environ['host'], port=5432, database=os.environ['database'],
-                                user=os.environ['user'],
-                                password=os.environ['password'])
+        conn = psycopg2.connect(
+            f"postgresql://{os.environ['user']}:{os.environ['password']}@"
+            f"{os.environ['host']}:{os.environ['port']}/{os.environ['database']}"
+        )
         cursor = conn.cursor()
-        print(f'Database connection was succesfull 😎\n')
+        print(f'Database connection was successful 😎\n')
         break
     except Exception as error:
         print(f'Connecting to database failed:\nError: {error} 😭\n')
@@ -68,7 +75,7 @@ while True:
 
 # Create OMR table
 cursor.execute("""
-    CREATE TABLE IF NOT EXISTS OMR (
+    CREATE TABLE IF NOT EXISTS memories (
         id SERIAL PRIMARY KEY,
         user_message TEXT,
         llm_response TEXT,
@@ -81,7 +88,7 @@ cursor.execute("""
 conn.commit()
 
 # Creating the SQL command to fetch all data from the OMR table
-memory_db = "SELECT * FROM OMR"
+memory_db = "SELECT * FROM memories"
 
 # Executing the query and fetching all the data
 cursor.execute(memory_db)
@@ -115,16 +122,32 @@ async def root():
     return {"message: Be Good Doing Good By Acting Good ¡!¡": conversations_datas}
 
 
+@app.get("/history")
+def get_posts(db: Session = Depends(get_db)):
+    # cursor.execute("""SELECT * FROM memories""")
+    # posts = cursor.fetchall()(db: Session = Depends(get_db)):
+    histories = db.query(models.Memory).all()
+    print(f'posts:\n{histories} 👌🏿\n')
+    return {"data": histories}
+
+
+@app.get("/sqlalchemy")
+def test_posts(db: Session = Depends(get_db)):
+    memory_ = db.query(models.Memory).all()
+    return {"data": memory_}
+
+
 @app.post("/conversation", status_code=status.HTTP_201_CREATED)
-def start_conversation(omr: Memory):
-    user_message = omr.user_message
+def start_conversation(memories: Memory):
+    #user_message = memories.user_message
+    user_message = ''
 
     # Use the LLM model to generate a response
-    llm_response = generate_llm_response(user_message)
+    llm_response = conversation.predict(input=user_message)
 
     memory_load = memory.load_memory_variables({})
 
-    memory.save_context({"input": f"Summarize the whole {conversations_datas}:"}, {"output": f"{memory_load}"})
+    memory.save_context({"input": f"{user_message}:"}, {"output": f"{llm_response}"})
 
     cursor.execute(
         """
