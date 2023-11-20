@@ -1,4 +1,10 @@
+from sqlalchemy.orm import Session
+from app import models
+from app.database import engine, get_db
+from app.models import Memory
+
 import openai
+import uvicorn
 from fastapi import FastAPI, Response, status, HTTPException, Depends
 from psycopg2.extras import RealDictCursor
 from pydantic import BaseModel
@@ -17,10 +23,6 @@ from flask_wtf import FlaskForm
 from wtforms import SubmitField, TextAreaField, validators
 import secrets
 
-from sqlalchemy.orm import Session
-from . import models
-from .database import engine, get_db
-from .models import Memory
 
 _ = load_dotenv(find_dotenv())
 
@@ -46,13 +48,23 @@ class TextAreaForm(FlaskForm):
     submit = SubmitField()
 
 
-# class Memory(BaseModel):
-#    user_message: str
-#    llm_response: str
-#    conversations_summary: str
-#    published: bool = True
-#    rating: Optional[int] = None
-#    created_at: Optional[str] = None
+class Memory(BaseModel):
+    user_message: str
+    llm_response: str
+    conversations_summary: str
+    published: Optional[bool] = True
+    rating: Optional[int] = None
+
+
+## Pydantic model for creating a new Memory record
+#class MemoryCreate(Memory):
+#    pass
+#
+#
+## Pydantic model for returning a Memory record
+#class MemoryRecord(Memory):
+#    id: int
+#    created_at: str  # Assuming you want to return the created_at timestamp as a string
 
 
 # Heroku provides the DATABASE_URL environment variable
@@ -119,8 +131,6 @@ def generate_llm_response(user_message):
     return str(response_object)
 
 
-
-
 @app.get("/", status_code=status.HTTP_201_CREATED)
 async def root():
     return {"message: Be Good Doing Good By Acting Good ¡!¡": conversations_datas}
@@ -141,25 +151,16 @@ def test_posts(db: Session = Depends(get_db)):
     return {"data": memory_} @ app.post("/conversation", status_code=status.HTTP_201_CREATED)
 
 
-@app.post("/conversation", status_code=status.HTTP_201_CREATED)
+@app.post("/conversation", status_code=status.HTTP_201_CREATED, response_model=Memory)
 def start_conversation(omr: Memory, db: Session = Depends(get_db)):
     try:
-        user_message = omr.user_message
-
-        # Use the LLM model to generate a response
-        llm_response = generate_llm_response(user_message)
-
         # Use SQLAlchemy ORM to insert a new record
-        new_memo = Memory(
-            user_message=omr.user_message,
-            llm_response=llm_response,
-            conversations_summary=omr.conversations_summary
-        )
+        new_memo = Memory(**omr.model_dump())
         db.add(new_memo)
         db.commit()
         db.refresh(new_memo)
 
-        return {"data": new_memo}
+        return new_memo
     except Exception as e:
         # Log the exception or print it for debugging
         print(f"An error occurred: {e}")
@@ -247,3 +248,7 @@ def del_conversation(id: int):
     conversations_datas.pop(index)
     print(f'"message": "conversation was successfully deleted"')
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))

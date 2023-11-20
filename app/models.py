@@ -2,7 +2,7 @@ from sqlalchemy import Column, INTEGER, String, Boolean, Integer
 from sqlalchemy.sql.expression import text
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 
-from .database import Base
+from app.database import Base
 
 
 class Memory(Base):
