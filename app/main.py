@@ -23,7 +23,6 @@ from flask_wtf import FlaskForm
 from wtforms import SubmitField, TextAreaField, validators
 import secrets
 
-
 _ = load_dotenv(find_dotenv())
 
 models.Base.metadata.create_all(bind=engine)
@@ -57,12 +56,12 @@ class Memory(BaseModel):
 
 
 ## Pydantic model for creating a new Memory record
-#class MemoryCreate(Memory):
+# class MemoryCreate(Memory):
 #    pass
 #
 #
 ## Pydantic model for returning a Memory record
-#class MemoryRecord(Memory):
+# class MemoryRecord(Memory):
 #    id: int
 #    created_at: str  # Assuming you want to return the created_at timestamp as a string
 
@@ -148,7 +147,7 @@ def get_posts(db: Session = Depends(get_db)):
 @app.get("/sqlalchemy")
 def test_posts(db: Session = Depends(get_db)):
     memory_ = db.query(models.Memory).all()
-    return {"data": memory_} @ app.post("/conversation", status_code=status.HTTP_201_CREATED)
+    return {"data": memory_}
 
 
 @app.post("/conversation", status_code=status.HTTP_201_CREATED, response_model=Memory)
