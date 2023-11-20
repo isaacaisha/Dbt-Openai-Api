@@ -114,7 +114,11 @@ def find_index_converse(id):
 # Function to generate LLM response
 def generate_llm_response(user_message):
     # Assuming 'conversation' is initialized as a ChatOpenAI object
-    return conversation.predict(input=user_message)
+    response_object = conversation.predict(input=user_message)
+    # Convert the response object to a string
+    return str(response_object)
+
+
 
 
 @app.get("/", status_code=status.HTTP_201_CREATED)
