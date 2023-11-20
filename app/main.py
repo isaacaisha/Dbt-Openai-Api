@@ -44,7 +44,6 @@ app.secret_key = secret_key
 # Heroku provides the DATABASE_URL environment variable
 DATABASE_URL = os.environ['DATABASE_URL']
 
-
 app.include_router(conversation.router)
 app.include_router(user.router)
 app.include_router(auth.router)
