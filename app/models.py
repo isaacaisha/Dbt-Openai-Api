@@ -1,15 +1,8 @@
-from pydantic import BaseModel
 from sqlalchemy import Column, INTEGER, String, Boolean, Integer
 from sqlalchemy.sql.expression import text
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 
 from .database import Base
-
-
-# Pydantic model for request validation
-class MemoryCreate(BaseModel):
-    user_message: str
-    llm_response: str = None
 
 
 class Memory(Base):

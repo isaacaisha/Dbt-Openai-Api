@@ -20,7 +20,7 @@ import secrets
 from sqlalchemy.orm import Session
 from . import models
 from .database import engine, get_db
-from .models import Memory, MemoryCreate
+from .models import Memory
 
 _ = load_dotenv(find_dotenv())
 
@@ -56,7 +56,7 @@ class TextAreaForm(FlaskForm):
 
 
 # Heroku provides the DATABASE_URL environment variable
-# DATABASE_URL = os.environ['DATABASE_URL']
+DATABASE_URL = os.environ['DATABASE_URL']
 # conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 
 
@@ -138,7 +138,7 @@ def test_posts(db: Session = Depends(get_db)):
 
 
 @app.post("/conversation", status_code=status.HTTP_201_CREATED)
-def start_conversation(omr: MemoryCreate, db: Session = Depends(get_db)):
+def start_conversation(omr: Memory, db: Session = Depends(get_db)):
     try:
         user_message = omr.user_message
 
@@ -209,7 +209,7 @@ def get_conversation_by_id(id: int, response: Response):
 
 
 @app.put("/update-conversation/{id}", response_model=None)
-def upd_conversation(id: int, memory: MemoryCreate, db: Session = Depends(get_db)):
+def upd_conversation(id: int, memory: Memory, db: Session = Depends(get_db)):
     index = find_index_converse(id)
     if index is None:
         print(f'Conversation with ID: {id} does not exist')
