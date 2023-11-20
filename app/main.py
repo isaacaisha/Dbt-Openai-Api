@@ -58,7 +58,6 @@ class MemoryCreate(BaseModel):
 # Heroku provides the DATABASE_URL environment variable
 DATABASE_URL = os.environ['DATABASE_URL']
 
-
 while True:
     try:
         conn = psycopg2.connect(
@@ -93,17 +92,6 @@ cursor.execute(memory_db)
 conversations_datas = cursor.fetchall()
 print(f'conversations_datas:\n{conversations_datas[9]}\n')
 
-# Creating the SQL command to fetch only the conversation summaries from the OMR table
-summary_omr = "SELECT conversations_summary FROM omr"
-# Executing the query and fetching all the conversation summaries
-cursor.execute(summary_omr)
-conversation_summaries = cursor.fetchall()
-print(f'conversation_summaries:\n{conversation_summaries[9]}\n')
-
-## Print or use the conversation summaries as needed
-#for summary in conversation_summaries:
-#    print(summary[0])
-
 
 def find_conversation_by_id(id):
     for converse in conversations_datas:
@@ -129,7 +117,7 @@ def generate_llm_response(user_message):
 
 @app.get("/", status_code=status.HTTP_201_CREATED)
 async def root():
-    return {"message: Be Good Doing Good By Acting Good ¡!¡": conversations_datas[:3]}
+    return {"message: Be Good Doing Good By Acting Good ¡!¡": "Siisi Chacal 🔥👌🏿😇💪🏿🔥"}
 
 
 @app.get("/all-conversation", status_code=status.HTTP_201_CREATED)
@@ -139,6 +127,22 @@ def get_posts(db: Session = Depends(get_db)):
     histories = db.query(models.Memory).all()
     print(f'posts:\n{histories} 👌🏿\n')
     return {"data": histories}
+
+
+@app.get("/conversation-summary", status_code=status.HTTP_201_CREATED)
+def get_conversation_summary(db: Session = Depends(get_db)):
+    conversation_summaries_all = [summary.conversations_summary for summary in db.query(models.Memory).all()]
+
+    head_summaries = conversation_summaries_all[0]
+    tail_summaries = conversation_summaries_all[-1:]
+
+    print(f'conversation_summaries_head:\n{head_summaries}\n\n'
+          f'conversation_summaries_tail:\n{tail_summaries} 👌🏿\n')
+
+    return {
+        "conversation_summary_head": head_summaries,
+        "conversation_summary_tail": tail_summaries
+    }
 
 
 @app.post("/start-conversation", status_code=status.HTTP_201_CREATED, response_model=MemoryCreate)
@@ -196,53 +200,52 @@ async def audio_response():
 
 
 @app.get("/conversation_by_id/{id}", status_code=status.HTTP_201_CREATED)
-def get_conversation_by_id(id: int, response: Response):
-    converse = find_conversation_by_id(id)
+def get_conversation_by_id(id: int, db: Session = Depends(get_db)):
+    converse = db.query(models.Memory).filter(models.Memory.id == id).first()
+
     if not converse:
         print(f'conversations_by_id: "{id}" was not found')
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"conversations_by_id: '{id}' was not found'")
-    return {"conversations_by_id:" f"{converse}"}
+
+    # Use Pydantic's model.dict() to convert the SQLAlchemy model to a dictionary
+    converse_dict = MemoryCreate(**converse.__dict__).model_dump()
+
+    return {"conversations_by_id": converse_dict}
 
 
 @app.put("/update-conversation/{id}", response_model=None)
 def upd_conversation(id: int, memory: MemoryCreate, db: Session = Depends(get_db)):
-    index = find_index_converse(id)
-    if index is None:
+    # Check if the conversation exists in the database
+    existing_memory_query = db.query(models.Memory).filter(models.Memory.id == id)
+    existing_memory = existing_memory_query.first()
+
+    if existing_memory is None:
         print(f'Conversation with ID: {id} does not exist')
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Conversation with ID: {id} does not exist"
         )
 
-    # Update the conversation details in the list
-    conversations_datas[index] = (
-        memory.user_message,
-        memory.llm_response,
-        memory.conversations_summary,
-        memory.published,
-        memory.rating,
-        memory.created_at
-    )
+    # Use Pydantic's model.dict() to convert the SQLAlchemy model to a dictionary
+    memory_dict = MemoryCreate(**existing_memory.__dict__).model_dump()
+    db.commit()
 
     # Logging the conversation update
-    print(f'Conversation with ID: {id} updated:\n{conversations_datas[index]}')
-    return {"message": f"Conversation with ID: {id} has been updated:\n{conversations_datas[index]}"}
-
-
-@app.get("/conversation-summary", status_code=status.HTTP_201_CREATED)
-def get_conversation_summary():
-    return {f"conversation_summary": conversation_summaries[:9]}
+    print(f'Conversation with ID: {id} updated:\n{memory_dict}')
+    return {"message": f"Conversation with ID: {id} has been updated:\n{memory_dict}"}
 
 
 @app.delete("/delete-conversation/{id}", status_code=status.HTTP_204_NO_CONTENT)
-def del_conversation(id: int):
-    index = find_index_converse(id)
-    if index == None:
+def del_conversation(id: int, db: Session = Depends(get_db)):
+    del_converse = db.query(models.Memory).filter(models.Memory.id == id)
+
+    if del_converse.first() is None:
         print(f'conversations_by_id: "{id}" does not exist')
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"conversation with id: '{id}' does not exist")
-    conversations_datas.pop(index)
+    del_converse.delete(synchronize_session=False)
+    db.commit()
     print(f'"message": "conversation was successfully deleted"')
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
