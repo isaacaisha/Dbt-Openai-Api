@@ -1,7 +1,8 @@
 from pydantic import BaseModel
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from app.models import Memory
+from .models import Memory
 from . import models
 from .database import engine, get_db
 from typing import Optional
