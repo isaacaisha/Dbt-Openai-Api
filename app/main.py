@@ -47,7 +47,7 @@ class TextAreaForm(FlaskForm):
     submit = SubmitField()
 
 
-class Memory(BaseModel):
+class MemoryCreate(BaseModel):
     user_message: str
     llm_response: str
     conversations_summary: str
@@ -55,13 +55,13 @@ class Memory(BaseModel):
     rating: Optional[int] = None
 
 
-## Pydantic model for creating a new Memory record
-# class MemoryCreate(Memory):
+## Pydantic model for creating a new Memory_create record
+# class MemoryCreate(Memory_create):
 #    pass
 #
 #
-## Pydantic model for returning a Memory record
-# class MemoryRecord(Memory):
+## Pydantic model for returning a Memory_create record
+# class MemoryRecord(Memory_create):
 #    id: int
 #    created_at: str  # Assuming you want to return the created_at timestamp as a string
 
@@ -135,7 +135,7 @@ async def root():
     return {"message: Be Good Doing Good By Acting Good ¡!¡": conversations_datas}
 
 
-@app.get("/history")
+@app.get("/history", status_code=status.HTTP_201_CREATED)
 def get_posts(db: Session = Depends(get_db)):
     # cursor.execute("""SELECT * FROM memories""")
     # posts = cursor.fetchall()(db: Session = Depends(get_db)):
@@ -144,17 +144,17 @@ def get_posts(db: Session = Depends(get_db)):
     return {"data": histories}
 
 
-@app.get("/sqlalchemy")
+@app.get("/sqlalchemy", status_code=status.HTTP_201_CREATED)
 def test_posts(db: Session = Depends(get_db)):
     memory_ = db.query(models.Memory).all()
     return {"data": memory_}
 
 
-@app.post("/conversation", status_code=status.HTTP_201_CREATED, response_model=Memory)
-def start_conversation(omr: Memory, db: Session = Depends(get_db)):
+@app.post("/conversation", status_code=status.HTTP_201_CREATED, response_model=MemoryCreate)
+def start_conversation(omr: MemoryCreate, db: Session = Depends(get_db)):
     try:
         # Use SQLAlchemy ORM to insert a new record
-        new_memo = Memory(**omr.model_dump())
+        new_memo = MemoryCreate(**omr.model_dump())
         db.add(new_memo)
         db.commit()
         db.refresh(new_memo)
@@ -213,7 +213,7 @@ def get_conversation_by_id(id: int, response: Response):
 
 
 @app.put("/update-conversation/{id}", response_model=None)
-def upd_conversation(id: int, memory: Memory, db: Session = Depends(get_db)):
+def upd_conversation(id: int, memory: MemoryCreate, db: Session = Depends(get_db)):
     index = find_index_converse(id)
     if index is None:
         print(f'Conversation with ID: {id} does not exist')
