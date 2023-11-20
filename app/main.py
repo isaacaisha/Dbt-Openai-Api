@@ -88,10 +88,21 @@ conn.commit()
 
 # Creating the SQL command to fetch all data from the OMR table
 memory_db = "SELECT * FROM omr"
-
 # Executing the query and fetching all the data
 cursor.execute(memory_db)
 conversations_datas = cursor.fetchall()
+print(f'conversations_datas:\n{conversations_datas[9]}\n')
+
+# Creating the SQL command to fetch only the conversation summaries from the OMR table
+summary_omr = "SELECT conversations_summary FROM omr"
+# Executing the query and fetching all the conversation summaries
+cursor.execute(summary_omr)
+conversation_summaries = cursor.fetchall()
+print(f'conversation_summaries:\n{conversation_summaries[9]}\n')
+
+## Print or use the conversation summaries as needed
+#for summary in conversation_summaries:
+#    print(summary[0])
 
 
 def find_conversation_by_id(id):
@@ -121,7 +132,7 @@ async def root():
     return {"message: Be Good Doing Good By Acting Good ¡!¡": conversations_datas[:3]}
 
 
-@app.get("/history", status_code=status.HTTP_201_CREATED)
+@app.get("/all-conversation", status_code=status.HTTP_201_CREATED)
 def get_posts(db: Session = Depends(get_db)):
     # cursor.execute("""SELECT * FROM memories""")
     # posts = cursor.fetchall()(db: Session = Depends(get_db)):
@@ -130,7 +141,7 @@ def get_posts(db: Session = Depends(get_db)):
     return {"data": histories}
 
 
-@app.post("/conversation", status_code=status.HTTP_201_CREATED, response_model=MemoryCreate)
+@app.post("/start-conversation", status_code=status.HTTP_201_CREATED, response_model=MemoryCreate)
 def start_conversation(omr: MemoryCreate, db: Session = Depends(get_db)):
     try:
         # Use SQLAlchemy ORM to insert a new record
@@ -184,11 +195,6 @@ async def audio_response():
     return {"message: Be Good Doing Good By Acting Good ¡!¡": conversations_datas[-1:]}
 
 
-@app.get("/conversation-summary", status_code=status.HTTP_201_CREATED)
-def get_conversation_summary():
-    return {f"conversation_summary": conversations_datas[-3:]}
-
-
 @app.get("/conversation_by_id/{id}", status_code=status.HTTP_201_CREATED)
 def get_conversation_by_id(id: int, response: Response):
     converse = find_conversation_by_id(id)
@@ -222,6 +228,11 @@ def upd_conversation(id: int, memory: MemoryCreate, db: Session = Depends(get_db
     # Logging the conversation update
     print(f'Conversation with ID: {id} updated:\n{conversations_datas[index]}')
     return {"message": f"Conversation with ID: {id} has been updated:\n{conversations_datas[index]}"}
+
+
+@app.get("/conversation-summary", status_code=status.HTTP_201_CREATED)
+def get_conversation_summary():
+    return {f"conversation_summary": conversation_summaries[:9]}
 
 
 @app.delete("/delete-conversation/{id}", status_code=status.HTTP_204_NO_CONTENT)
