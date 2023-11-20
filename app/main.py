@@ -9,7 +9,6 @@ from typing import Optional
 import openai
 import uvicorn
 from fastapi import FastAPI, Response, status, HTTPException, Depends
-from psycopg2.extras import RealDictCursor
 import time
 
 from dotenv import load_dotenv, find_dotenv
@@ -55,20 +54,9 @@ class MemoryCreate(BaseModel):
     published: Optional[bool] = True
     rating: Optional[int] = None
 
-## Pydantic model for creating a new Memory_create record
-# class MemoryCreate(Memory_create):
-#    pass
-#
-#
-## Pydantic model for returning a Memory_create record
-# class MemoryRecord(Memory_create):
-#    id: int
-#    created_at: str  # Assuming you want to return the created_at timestamp as a string
-
 
 # Heroku provides the DATABASE_URL environment variable
 DATABASE_URL = os.environ['DATABASE_URL']
-# conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 
 
 while True:
@@ -117,7 +105,7 @@ def find_index_converse(id):
     for i, conv in enumerate(conversations_datas):
         if isinstance(conv, dict) and conv.get('id') == id:
             return i
-        elif isinstance(conv, tuple) and conv[0] == id:  # Assuming the ID is the first element in the tuple
+        elif isinstance(conv, tuple) and conv[0] == id:
             return i
     return None
 
@@ -130,7 +118,7 @@ def generate_llm_response(user_message):
 
 @app.get("/", status_code=status.HTTP_201_CREATED)
 async def root():
-    return {"message: Be Good Doing Good By Acting Good ¡!¡": conversations_datas}
+    return {"message: Be Good Doing Good By Acting Good ¡!¡": conversations_datas[:3]}
 
 
 @app.get("/history", status_code=status.HTTP_201_CREATED)
@@ -142,17 +130,11 @@ def get_posts(db: Session = Depends(get_db)):
     return {"data": histories}
 
 
-@app.get("/sqlalchemy", status_code=status.HTTP_201_CREATED)
-def test_posts(db: Session = Depends(get_db)):
-    memory_ = db.query(models.Memory).all()
-    return {"data": memory_}
-
-
 @app.post("/conversation", status_code=status.HTTP_201_CREATED, response_model=MemoryCreate)
 def start_conversation(omr: MemoryCreate, db: Session = Depends(get_db)):
     try:
         # Use SQLAlchemy ORM to insert a new record
-        new_memo = Memory(**omr.dict())
+        new_memo = Memory(**omr.model_dump())
 
         # Get LLM response using the user's message
         llm_response = generate_llm_response(omr.user_message)
@@ -204,7 +186,7 @@ async def audio_response():
 
 @app.get("/conversation-summary", status_code=status.HTTP_201_CREATED)
 def get_conversation_summary():
-    return {f"conversation_summary": conversations_datas[:3]}
+    return {f"conversation_summary": conversations_datas[-3:]}
 
 
 @app.get("/conversation_by_id/{id}", status_code=status.HTTP_201_CREATED)
