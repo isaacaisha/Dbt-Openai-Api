@@ -51,7 +51,7 @@ class Memory(BaseModel):
     llm_response: str
     conversations_summary: str
     published: bool = True
-    rating: Optional[int] = None
+    #rating: Optional[int] = None
     created_at: str
 
 
