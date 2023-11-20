@@ -26,7 +26,7 @@ _ = load_dotenv(find_dotenv())
 
 models.Base.metadata.create_all(bind=engine)
 
-app = FastAPI()
+app = FastAPI(debug=True)
 
 openai.api_key = os.environ['OPENAI_API_KEY']
 # Generate a random secret key
@@ -139,22 +139,27 @@ def test_posts(db: Session = Depends(get_db)):
 
 @app.post("/conversation", status_code=status.HTTP_201_CREATED)
 def start_conversation(omr: MemoryCreate, db: Session = Depends(get_db)):
-    user_message = omr.user_message
+    try:
+        user_message = omr.user_message
 
-    # Use the LLM model to generate a response
-    llm_response = generate_llm_response(user_message)
+        # Use the LLM model to generate a response
+        llm_response = generate_llm_response(user_message)
 
-    # Use SQLAlchemy ORM to insert a new record
-    new_memo = Memory(
-        user_message=omr.user_message,
-        llm_response=llm_response,
-        conversations_summary=omr.conversations_summary
-    )
-    db.add(new_memo)
-    db.commit()
-    db.refresh(new_memo)
+        # Use SQLAlchemy ORM to insert a new record
+        new_memo = Memory(
+            user_message=omr.user_message,
+            llm_response=llm_response,
+            conversations_summary=omr.conversations_summary
+        )
+        db.add(new_memo)
+        db.commit()
+        db.refresh(new_memo)
 
-    return {"data": new_memo}
+        return {"data": new_memo}
+    except Exception as e:
+        # Log the exception or print it for debugging
+        print(f"An error occurred: {e}")
+        raise HTTPException(status_code=500, detail="Internal Server Error")
 
     # cursor.execute(
     #    """

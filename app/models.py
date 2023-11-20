@@ -9,7 +9,7 @@ from .database import Base
 # Pydantic model for request validation
 class MemoryCreate(BaseModel):
     user_message: str
-    conversations_summary: str
+    llm_response: str = ' '
 
 
 class Memory(Base):
