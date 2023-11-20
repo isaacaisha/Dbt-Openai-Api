@@ -20,13 +20,13 @@ import secrets
 from sqlalchemy.orm import Session
 from . import models
 from .database import engine, get_db
+from .models import Memory, MemoryCreate
 
 _ = load_dotenv(find_dotenv())
 
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
-
 
 openai.api_key = os.environ['OPENAI_API_KEY']
 # Generate a random secret key
@@ -46,13 +46,13 @@ class TextAreaForm(FlaskForm):
     submit = SubmitField()
 
 
-class Memory(BaseModel):
-    user_message: str
-    llm_response: str
-    conversations_summary: str
-    published: bool = True
-    #rating: Optional[int] = None
-    created_at: str
+# class Memory(BaseModel):
+#    user_message: str
+#    llm_response: str
+#    conversations_summary: str
+#    published: bool = True
+#    rating: Optional[int] = None
+#    created_at: Optional[str] = None
 
 
 # Heroku provides the DATABASE_URL environment variable
@@ -75,7 +75,7 @@ while True:
 
 # Create OMR table
 cursor.execute("""
-    CREATE TABLE IF NOT EXISTS memories (
+    CREATE TABLE IF NOT EXISTS omr (
         id SERIAL PRIMARY KEY,
         user_message TEXT,
         llm_response TEXT,
@@ -88,7 +88,7 @@ cursor.execute("""
 conn.commit()
 
 # Creating the SQL command to fetch all data from the OMR table
-memory_db = "SELECT * FROM memories"
+memory_db = "SELECT * FROM omr"
 
 # Executing the query and fetching all the data
 cursor.execute(memory_db)
@@ -138,40 +138,49 @@ def test_posts(db: Session = Depends(get_db)):
 
 
 @app.post("/conversation", status_code=status.HTTP_201_CREATED)
-def start_conversation(memories: Memory):
-    #user_message = memories.user_message
-    user_message = ''
+def start_conversation(omr: MemoryCreate, db: Session = Depends(get_db)):
+    user_message = omr.user_message
 
     # Use the LLM model to generate a response
-    llm_response = conversation.predict(input=user_message)
+    llm_response = generate_llm_response(user_message)
 
-    memory_load = memory.load_memory_variables({})
-
-    memory.save_context({"input": f"{user_message}:"}, {"output": f"{llm_response}"})
-
-    cursor.execute(
-        """
-        INSERT INTO OMR (user_message, llm_response, conversations_summary, created_at) VALUES (%s, %s, %s, now())
-        """,
-        (user_message, llm_response, conversations_datas)
+    # Use SQLAlchemy ORM to insert a new record
+    new_memo = Memory(
+        user_message=omr.user_message,
+        llm_response=llm_response,
+        conversations_summary=omr.conversations_summary
     )
-    conn.commit()
+    db.add(new_memo)
+    db.commit()
+    db.refresh(new_memo)
 
-    # Fetch the conversation ID and timestamp
-    cursor.execute("SELECT id, created_at FROM OMR ORDER BY id DESC LIMIT 1")
-    last_entry = cursor.fetchone()
-    conversation_id, created_at = last_entry if last_entry else (None, None)
+    return {"data": new_memo}
 
-    # Format and return the conversation details
-    conversation_dict = {
-        "user_message": user_message,
-        "llm_response": llm_response,
-        "published": True,
-        "created_at": created_at.strftime('%Y-%m-%d %H:%M:%S') if created_at else None,
-        "id": conversation_id
-    }
+    # cursor.execute(
+    #    """
+    #    INSERT INTO OMR (user_message, llm_response, conversations_summary, created_at) VALUES (%s, %s, %s, now())
+    #    """,
+    #    (user_message, llm_response, conversations_datas)
+    # )
+    # conn.commit()
 
-    return {"conversation": conversation_dict}
+
+#
+## Fetch the conversation ID and timestamp
+# cursor.execute("SELECT id, created_at FROM OMR ORDER BY id DESC LIMIT 1")
+# last_entry = cursor.fetchone()
+# conversation_id, created_at = last_entry if last_entry else (None, None)
+#
+## Format and return the conversation details
+# conversation_dict = {
+#    "user_message": user_message,
+#    "llm_response": llm_response,
+#    "published": True,
+#    "created_at": created_at.strftime('%Y-%m-%d %H:%M:%S') if created_at else None,
+#    "id": conversation_id
+# }
+#
+# return {"conversation": conversation_dict}
 
 
 @app.get("/audio", status_code=status.HTTP_201_CREATED)
@@ -194,8 +203,8 @@ def get_conversation_by_id(id: int, response: Response):
     return {"conversations_by_id:" f"{converse}"}
 
 
-@app.put("/update-conversation/{id}")
-def upd_conversation(id: int, memory: Memory, response: Response):
+@app.put("/update-conversation/{id}", response_model=None)
+def upd_conversation(id: int, memory: MemoryCreate, db: Session = Depends(get_db)):
     index = find_index_converse(id)
     if index is None:
         print(f'Conversation with ID: {id} does not exist')
