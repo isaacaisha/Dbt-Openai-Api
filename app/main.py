@@ -1,7 +1,8 @@
 from pydantic import BaseModel
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from app.models import Memory
+from .models import Memory
 from . import models
 from .database import engine, get_db
 from typing import Optional
@@ -12,15 +13,14 @@ from fastapi import FastAPI, Response, status, HTTPException, Depends
 import time
 
 from dotenv import load_dotenv, find_dotenv
+import json
 import os
 import psycopg2
 
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import ConversationChain
-from langchain.memory import ConversationBufferMemory
+from langchain.memory import ConversationBufferMemory, ConversationSummaryBufferMemory
 
-from flask_wtf import FlaskForm
-from wtforms import SubmitField, TextAreaField, validators
 import secrets
 
 _ = load_dotenv(find_dotenv())
@@ -35,16 +35,14 @@ secret_key = secrets.token_hex(199)
 # Set it as the Flask application's secret key
 app.secret_key = secret_key
 
+# Heroku provides the DATABASE_URL environment variable
+DATABASE_URL = os.environ['DATABASE_URL']
+
 # Initialize an empty conversation chain
 llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")  # Set your desired LLM model here
 memory = ConversationBufferMemory()
 conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
-
-
-# Define a Flask form
-class TextAreaForm(FlaskForm):
-    writing_text = TextAreaField('Start Writing', [validators.InputRequired(message="Please enter text.")])
-    submit = SubmitField()
+memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=19)
 
 
 class MemoryCreate(BaseModel):
@@ -54,9 +52,6 @@ class MemoryCreate(BaseModel):
     published: Optional[bool] = True
     rating: Optional[int] = None
 
-
-# Heroku provides the DATABASE_URL environment variable
-DATABASE_URL = os.environ['DATABASE_URL']
 
 while True:
     try:
@@ -80,7 +75,7 @@ cursor.execute("""
         conversations_summary TEXT,
         published BOOLEAN,
         rating INTEGER,
-        created_at TIMESTAMP
+        created_at TIMESTAMP 
     )
 """)
 conn.commit()
@@ -90,7 +85,7 @@ memory_db = "SELECT * FROM omr"
 # Executing the query and fetching all the data
 cursor.execute(memory_db)
 conversations_datas = cursor.fetchall()
-print(f'conversations_datas:\n{conversations_datas[9]}\n')
+#print(f'conversations_datas:\n{conversations_datas[9]}\n')
 
 
 def find_conversation_by_id(id):
@@ -157,6 +152,23 @@ def start_conversation(omr: MemoryCreate, db: Session = Depends(get_db)):
         # Update the new_memo with the LLM response
         new_memo.llm_response = llm_response
 
+        # Save the conversation context
+        memory_summary.save_context({"input": omr.user_message}, {"output": llm_response})
+
+        # Load the conversation context
+        conversations_summary = memory_summary.load_memory_variables({})
+
+        # Convert the dictionary to a JSON-formatted string
+        conversations_summary_json = json.dumps(conversations_summary)
+
+        print(f'conversations_summary:\n{conversations_summary_json}\n')
+
+        # Set the conversation summary in the new_memo
+        new_memo.conversations_summary = conversations_summary_json
+
+        # Set the timestamp using the database server's time
+        new_memo.created_at = func.now()
+
         db.add(new_memo)
         db.commit()
         db.refresh(new_memo)
@@ -166,32 +178,6 @@ def start_conversation(omr: MemoryCreate, db: Session = Depends(get_db)):
         # Log the exception or print it for debugging
         print(f"An error occurred: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
-
-    # cursor.execute(
-    #    """
-    #    INSERT INTO OMR (user_message, llm_response, conversations_summary, created_at) VALUES (%s, %s, %s, now())
-    #    """,
-    #    (user_message, llm_response, conversations_datas)
-    # )
-    # conn.commit()
-
-
-#
-## Fetch the conversation ID and timestamp
-# cursor.execute("SELECT id, created_at FROM OMR ORDER BY id DESC LIMIT 1")
-# last_entry = cursor.fetchone()
-# conversation_id, created_at = last_entry if last_entry else (None, None)
-#
-## Format and return the conversation details
-# conversation_dict = {
-#    "user_message": user_message,
-#    "llm_response": llm_response,
-#    "published": True,
-#    "created_at": created_at.strftime('%Y-%m-%d %H:%M:%S') if created_at else None,
-#    "id": conversation_id
-# }
-#
-# return {"conversation": conversation_dict}
 
 
 @app.get("/audio", status_code=status.HTTP_201_CREATED)
