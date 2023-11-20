@@ -1,14 +1,15 @@
+from pydantic import BaseModel
 from sqlalchemy.orm import Session
-from app import models
-from app.database import engine, get_db
+
 from app.models import Memory
+from . import models
+from .database import engine, get_db
+from typing import Optional
 
 import openai
 import uvicorn
 from fastapi import FastAPI, Response, status, HTTPException, Depends
 from psycopg2.extras import RealDictCursor
-from pydantic import BaseModel
-from typing import Optional
 import time
 
 from dotenv import load_dotenv, find_dotenv
@@ -53,7 +54,6 @@ class MemoryCreate(BaseModel):
     conversations_summary: str
     published: Optional[bool] = True
     rating: Optional[int] = None
-
 
 ## Pydantic model for creating a new Memory_create record
 # class MemoryCreate(Memory_create):
@@ -125,9 +125,7 @@ def find_index_converse(id):
 # Function to generate LLM response
 def generate_llm_response(user_message):
     # Assuming 'conversation' is initialized as a ChatOpenAI object
-    response_object = conversation.predict(input=user_message)
-    # Convert the response object to a string
-    return str(response_object)
+    return conversation.predict(input=user_message)
 
 
 @app.get("/", status_code=status.HTTP_201_CREATED)
@@ -154,7 +152,14 @@ def test_posts(db: Session = Depends(get_db)):
 def start_conversation(omr: MemoryCreate, db: Session = Depends(get_db)):
     try:
         # Use SQLAlchemy ORM to insert a new record
-        new_memo = MemoryCreate(**omr.model_dump())
+        new_memo = Memory(**omr.dict())
+
+        # Get LLM response using the user's message
+        llm_response = generate_llm_response(omr.user_message)
+
+        # Update the new_memo with the LLM response
+        new_memo.llm_response = llm_response
+
         db.add(new_memo)
         db.commit()
         db.refresh(new_memo)
