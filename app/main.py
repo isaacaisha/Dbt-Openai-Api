@@ -134,10 +134,9 @@ def get_posts(db: Session = Depends(get_db)):
 @app.get("/sqlalchemy")
 def test_posts(db: Session = Depends(get_db)):
     memory_ = db.query(models.Memory).all()
-    return {"data": memory_}
+    return {"data": memory_} @ app.post("/conversation", status_code=status.HTTP_201_CREATED)
 
 
-@app.post("/conversation", status_code=status.HTTP_201_CREATED)
 def start_conversation(omr: MemoryCreate, db: Session = Depends(get_db)):
     try:
         user_message = omr.user_message
