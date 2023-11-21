@@ -68,3 +68,4 @@ class Vote(BaseModel):
 
     class Config:
         from_attributes = True
+        #from_orm = True
