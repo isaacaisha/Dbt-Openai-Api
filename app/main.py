@@ -1,11 +1,9 @@
-from pydantic import BaseModel
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from .models import Memory
-from . import models
+from . import models, schemas
 from .database import engine, get_db
-from typing import Optional
 
 import openai
 import uvicorn
