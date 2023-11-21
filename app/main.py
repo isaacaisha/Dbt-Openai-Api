@@ -1,15 +1,14 @@
-from pydantic import BaseModel
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from .models import Memory
-from . import models
+from . import models, schemas
 from .database import engine, get_db
-from typing import Optional
 
 import openai
 import uvicorn
 from fastapi import FastAPI, Response, status, HTTPException, Depends
+from typing import List
 import time
 
 from dotenv import load_dotenv, find_dotenv
@@ -45,14 +44,6 @@ conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=19)
 
 
-class MemoryCreate(BaseModel):
-    user_message: str
-    llm_response: str
-    conversations_summary: str
-    published: Optional[bool] = True
-    rating: Optional[int] = None
-
-
 while True:
     try:
         conn = psycopg2.connect(
@@ -66,19 +57,19 @@ while True:
         print(f'Connecting to database failed:\nError: {error} 😭\n')
         time.sleep(3)
 
-# Create OMR table
-cursor.execute("""
-    CREATE TABLE IF NOT EXISTS omr (
-        id SERIAL PRIMARY KEY,
-        user_message TEXT,
-        llm_response TEXT,
-        conversations_summary TEXT,
-        published BOOLEAN,
-        rating INTEGER,
-        created_at TIMESTAMP 
-    )
-""")
-conn.commit()
+## Create OMR table
+#cursor.execute("""
+#    CREATE TABLE IF NOT EXISTS omr (
+#        id SERIAL PRIMARY KEY,
+#        user_message TEXT,
+#        llm_response TEXT,
+#        conversations_summary TEXT,
+#        published BOOLEAN,
+#        rating INTEGER,
+#        created_at TIMESTAMP
+#    )
+#""")
+#conn.commit()
 
 # Creating the SQL command to fetch all data from the OMR table
 memory_db = "SELECT * FROM omr"
@@ -115,33 +106,30 @@ async def root():
     return {"message: Be Good Doing Good By Acting Good ¡!¡": "Siisi Chacal 🔥👌🏿😇💪🏿🔥"}
 
 
-@app.get("/all-conversation", status_code=status.HTTP_201_CREATED)
+@app.get("/all-conversation", status_code=status.HTTP_201_CREATED, response_model=List[schemas.MemoryResponse])
 def get_posts(db: Session = Depends(get_db)):
     # cursor.execute("""SELECT * FROM memories""")
     # posts = cursor.fetchall()(db: Session = Depends(get_db)):
     histories = db.query(models.Memory).all()
-    print(f'posts:\n{histories} 👌🏿\n')
-    return {"data": histories}
+    print(f'all-conversation:\n{histories} 👌🏿\n')
+    return histories
 
 
 @app.get("/conversation-summary", status_code=status.HTTP_201_CREATED)
 def get_conversation_summary(db: Session = Depends(get_db)):
-    conversation_summaries_all = [summary.conversations_summary for summary in db.query(models.Memory).all()]
 
-    head_summaries = conversation_summaries_all[0]
-    tail_summaries = conversation_summaries_all[-1:]
+    conversation_summaries_all = [summary.conversations_summary for summary in db.query(models.Memory).all()]
+    head_summaries = conversation_summaries_all[:3]
+    tail_summaries = conversation_summaries_all[-3:]
 
     print(f'conversation_summaries_head:\n{head_summaries}\n\n'
           f'conversation_summaries_tail:\n{tail_summaries} 👌🏿\n')
 
-    return {
-        "conversation_summary_head": head_summaries,
-        "conversation_summary_tail": tail_summaries
-    }
+    return {"conversation_summary_head": head_summaries, "conversation_summary_tail": tail_summaries}
 
 
-@app.post("/start-conversation", status_code=status.HTTP_201_CREATED, response_model=MemoryCreate)
-def start_conversation(omr: MemoryCreate, db: Session = Depends(get_db)):
+@app.post("/start-conversation", status_code=status.HTTP_201_CREATED, response_model=schemas.MemoryCreate)
+def start_conversation(omr: schemas.MemoryCreate, db: Session = Depends(get_db)):
     try:
         # Use SQLAlchemy ORM to insert a new record
         new_memo = Memory(**omr.model_dump())
@@ -161,6 +149,8 @@ def start_conversation(omr: MemoryCreate, db: Session = Depends(get_db)):
         # Convert the dictionary to a JSON-formatted string
         conversations_summary_json = json.dumps(conversations_summary)
 
+        print(f'omr.user_message:\n{omr.user_message}\n')
+        print(f'llm_response:\n{llm_response}\n')
         print(f'conversations_summary:\n{conversations_summary_json}\n')
 
         # Set the conversation summary in the new_memo
@@ -185,23 +175,23 @@ async def audio_response():
     return {"message: Be Good Doing Good By Acting Good ¡!¡": conversations_datas[-1:]}
 
 
-@app.get("/conversation_by_id/{id}", status_code=status.HTTP_201_CREATED)
+@app.get("/conversation_by_id/{id}", status_code=status.HTTP_201_CREATED, response_model=schemas.MemoryResponse)
 def get_conversation_by_id(id: int, db: Session = Depends(get_db)):
-    converse = db.query(models.Memory).filter(models.Memory.id == id).first()
 
+    converse = db.query(models.Memory).filter(models.Memory.id == id).first()
     if not converse:
         print(f'conversations_by_id: "{id}" was not found')
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"conversations_by_id: '{id}' was not found'")
 
     # Use Pydantic's model.dict() to convert the SQLAlchemy model to a dictionary
-    converse_dict = MemoryCreate(**converse.__dict__).model_dump()
+    converse_dict = schemas.MemoryResponse(**converse.__dict__).model_dump()
 
-    return {"conversations_by_id": converse_dict}
+    return converse_dict
 
 
-@app.put("/update-conversation/{id}", response_model=None)
-def upd_conversation(id: int, memory: MemoryCreate, db: Session = Depends(get_db)):
+@app.put("/update-conversation/{id}", response_model=schemas.MemoryResponse)
+def upd_conversation(id: int, db: Session = Depends(get_db)):
     # Check if the conversation exists in the database
     existing_memory_query = db.query(models.Memory).filter(models.Memory.id == id)
     existing_memory = existing_memory_query.first()
@@ -214,12 +204,12 @@ def upd_conversation(id: int, memory: MemoryCreate, db: Session = Depends(get_db
         )
 
     # Use Pydantic's model.dict() to convert the SQLAlchemy model to a dictionary
-    memory_dict = MemoryCreate(**existing_memory.__dict__).model_dump()
+    memory_dict = schemas.MemoryResponse(**existing_memory.__dict__).model_dump()
     db.commit()
 
     # Logging the conversation update
     print(f'Conversation with ID: {id} updated:\n{memory_dict}')
-    return {"message": f"Conversation with ID: {id} has been updated:\n{memory_dict}"}
+    return memory_dict
 
 
 @app.delete("/delete-conversation/{id}", status_code=status.HTTP_204_NO_CONTENT)
