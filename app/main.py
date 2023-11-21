@@ -106,7 +106,7 @@ async def root():
     return {"message: Be Good Doing Good By Acting Good ¡!¡": "Siisi Chacal 🔥👌🏿😇💪🏿🔥"}
 
 
-@app.get("/all-conversation", status_code=status.HTTP_201_CREATED, response_model=List[schemas.MemoryResponse])
+@app.get("/all-conversation", status_code=status.HTTP_201_CREATED)
 def get_posts(db: Session = Depends(get_db)):
     # cursor.execute("""SELECT * FROM memories""")
     # posts = cursor.fetchall()(db: Session = Depends(get_db)):
@@ -172,6 +172,7 @@ def start_conversation(omr: schemas.MemoryCreate, db: Session = Depends(get_db))
 
 @app.get("/audio", status_code=status.HTTP_201_CREATED)
 async def audio_response():
+    print(f'audio_response:\n{conversations_datas[-1:]}\n')
     return {"message: Be Good Doing Good By Acting Good ¡!¡": conversations_datas[-1:]}
 
 
@@ -186,12 +187,13 @@ def get_conversation_by_id(id: int, db: Session = Depends(get_db)):
 
     # Use Pydantic's model.dict() to convert the SQLAlchemy model to a dictionary
     converse_dict = schemas.MemoryResponse(**converse.__dict__).model_dump()
+    print(f'get_conversation_by_id:\n{converse_dict}\n')
 
     return converse_dict
 
 
 @app.put("/update-conversation/{id}", response_model=schemas.MemoryResponse)
-def upd_conversation(id: int, db: Session = Depends(get_db)):
+def upd_conversation(id: int, updated_memory: schemas.MemoryResponse, db: Session = Depends(get_db)):
     # Check if the conversation exists in the database
     existing_memory_query = db.query(models.Memory).filter(models.Memory.id == id)
     existing_memory = existing_memory_query.first()
@@ -203,9 +205,15 @@ def upd_conversation(id: int, db: Session = Depends(get_db)):
             detail=f"Conversation with ID: {id} does not exist"
         )
 
-    # Use Pydantic's model.dict() to convert the SQLAlchemy model to a dictionary
-    memory_dict = schemas.MemoryResponse(**existing_memory.__dict__).model_dump()
+    # Update the existing_memory with the values from updated_memory
+    for field in updated_memory.model_dump().keys():
+        if hasattr(existing_memory, field):
+            setattr(existing_memory, field, getattr(updated_memory, field))
+
     db.commit()
+
+    # Use Pydantic's model.dict() to convert the SQLAlchemy model to a dictionary
+    memory_dict = schemas.MemoryResponse(**updated_memory.__dict__).model_dump()
 
     # Logging the conversation update
     print(f'Conversation with ID: {id} updated:\n{memory_dict}')

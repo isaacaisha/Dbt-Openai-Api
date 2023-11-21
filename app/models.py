@@ -12,5 +12,5 @@ class Memory(Base):
     llm_response = Column(String, nullable=False)
     conversations_summary = Column(String, nullable=False)
     published = Column(Boolean, default=True)
-    # rating = Integer()
+    rating = Integer()
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text('now()'))
