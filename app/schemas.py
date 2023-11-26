@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import Optional
 from datetime import datetime
 
@@ -21,4 +21,18 @@ class MemoryResponse(MemoryBase):
 
     class Config:
         from_attributes = True
-        #from_orm = True
+
+
+class UserCreate(BaseModel):
+    email: EmailStr
+    password: str
+    pass
+
+
+class UserOut(BaseModel):
+    id: int
+    email: EmailStr
+    created_at: Optional[datetime]
+
+    class Config:
+        from_attributes = True

@@ -2,13 +2,13 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from .models import Memory
-from . import models, schemas
+from . import models, schemas, utils
 from .database import engine, get_db
 
 import openai
 import uvicorn
 from fastapi import FastAPI, Response, status, HTTPException, Depends
-from typing import List
+# from typing import List
 import time
 
 from dotenv import load_dotenv, find_dotenv
@@ -43,7 +43,6 @@ memory = ConversationBufferMemory()
 conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=19)
 
-
 while True:
     try:
         conn = psycopg2.connect(
@@ -57,26 +56,14 @@ while True:
         print(f'Connecting to database failed:\nError: {error} 😭\n')
         time.sleep(3)
 
-## Create OMR table
-#cursor.execute("""
-#    CREATE TABLE IF NOT EXISTS omr (
-#        id SERIAL PRIMARY KEY,
-#        user_message TEXT,
-#        llm_response TEXT,
-#        conversations_summary TEXT,
-#        published BOOLEAN,
-#        rating INTEGER,
-#        created_at TIMESTAMP
-#    )
-#""")
-#conn.commit()
-
 # Creating the SQL command to fetch all data from the OMR table
 memory_db = "SELECT * FROM omr"
+
 # Executing the query and fetching all the data
 cursor.execute(memory_db)
+
 conversations_datas = cursor.fetchall()
-#print(f'conversations_datas:\n{conversations_datas[9]}\n')
+# print(f'conversations_datas:\n{conversations_datas[9]}\n')
 
 
 def find_conversation_by_id(id):
@@ -117,7 +104,6 @@ def get_posts(db: Session = Depends(get_db)):
 
 @app.get("/conversation-summary", status_code=status.HTTP_201_CREATED)
 def get_conversation_summary(db: Session = Depends(get_db)):
-
     conversation_summaries_all = [summary.conversations_summary for summary in db.query(models.Memory).all()]
     head_summaries = conversation_summaries_all[:3]
     tail_summaries = conversation_summaries_all[-3:]
@@ -178,7 +164,6 @@ async def audio_response():
 
 @app.get("/conversation_by_id/{id}", status_code=status.HTTP_201_CREATED, response_model=schemas.MemoryResponse)
 def get_conversation_by_id(id: int, db: Session = Depends(get_db)):
-
     converse = db.query(models.Memory).filter(models.Memory.id == id).first()
     if not converse:
         print(f'conversations_by_id: "{id}" was not found')
@@ -232,6 +217,35 @@ def del_conversation(id: int, db: Session = Depends(get_db)):
     db.commit()
     print(f'"message": "conversation was successfully deleted"')
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@app.post("/users", status_code=status.HTTP_201_CREATED, response_model=schemas.UserOut)
+def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
+    # Hash the password - user.password
+    hashed_password = utils.hash_(user.password)
+    user.password = hashed_password
+
+    new_user = models.User(**user.model_dump())
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    print(f'new_user:\nEmail: {new_user.email}\nPassword: {new_user.password}\n')
+
+    return new_user
+
+
+@app.get('/users/{id}', response_model=schemas.UserOut)
+def get_user(id: int, db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.id == id).first()
+
+    if not user:
+        print(f'User with id: {id} does not exist')
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f'User with id: {id} does not exist')
+
+    print(f'id: {id}\nuser email: {user.email}\nuser password: {user.password}\n'
+          f'user created_at: {user.created_at}')
+
+    return user
 
 
 if __name__ == "__main__":
