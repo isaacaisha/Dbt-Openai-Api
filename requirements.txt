@@ -5,6 +5,7 @@ anyio==3.7.1
 asgiref==3.7.2
 async-timeout==4.0.3
 attrs==23.1.0
+bcrypt==4.0.1
 blinker==1.6.2
 cachelib==0.9.0
 certifi==2023.7.22
@@ -33,15 +34,14 @@ mypy-extensions==1.0.0
 numpy==1.26.1
 openai==0.27.9
 packaging==23.1
+passlib==1.7.4
 pipdeptree==2.13.0
 psycopg2-binary==2.9.9
-
 pydantic==2.4.2
 pydantic_core==2.10.1
 python-dotenv==1.0.0
 python-multipart==0.0.6
 pytz==2022.1
-
 PyYAML==6.0.1
 regex==2023.10.3
 requests==2.31.0
@@ -56,8 +56,6 @@ urllib3==2.0.4
 Werkzeug==2.3.7
 WTForms==3.0.1
 yarl==1.9.2
-
 uvicorn~=0.24.0.post1
 fastapi~=0.104.1
 psycopg2~=2.9.9
-passlib~=1.7.4
