@@ -110,8 +110,6 @@ websockets==12.0
 Werkzeug==2.3.7
 WTForms==3.0.1
 yarl==1.9.2
-
 uvicorn~=0.24.0.post1
 fastapi~=0.104.1
 psycopg2~=2.9.9
-passlib~=1.7.4
