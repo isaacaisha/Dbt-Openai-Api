@@ -16,8 +16,8 @@ class MemoryCreate(MemoryBase):
 
 
 class MemoryResponse(MemoryBase):
-    id: Optional[int]
-    created_at: Optional[datetime]
+    id: Optional[int] = None
+    created_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True
@@ -32,7 +32,7 @@ class UserCreate(BaseModel):
 class UserOut(BaseModel):
     id: int
     email: EmailStr
-    created_at: Optional[datetime]
+    created_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True
@@ -41,3 +41,12 @@ class UserOut(BaseModel):
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    id: Optional[str] = None

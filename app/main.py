@@ -7,8 +7,8 @@ import time
 from fastapi import FastAPI, status
 from . import models
 from .database import engine
-from dotenv import load_dotenv, find_dotenv
 from .routers import conversation, user, auth
+from dotenv import load_dotenv, find_dotenv
 
 
 _ = load_dotenv(find_dotenv())
