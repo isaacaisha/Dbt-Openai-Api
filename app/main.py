@@ -8,7 +8,7 @@ from fastapi import FastAPI, status
 from . import models
 from .database import engine
 from dotenv import load_dotenv, find_dotenv
-from .routers import conversation, user
+from .routers import conversation, user, auth
 
 
 _ = load_dotenv(find_dotenv())
@@ -68,6 +68,7 @@ def find_index_converse(id):
 
 app.include_router(conversation.router)
 app.include_router(user.router)
+app.include_router(auth.router)
 
 
 @app.get("/", status_code=status.HTTP_201_CREATED)

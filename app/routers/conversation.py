@@ -28,6 +28,11 @@ def generate_llm_response(user_message):
     return conversation.predict(input=user_message)
 
 
+@router.get("/", status_code=status.HTTP_201_CREATED)
+async def home():
+    return {"Be Good Doing Good By Acting Good ¡!¡": "Siisi Chacal 🔥👌🏿😇💪🏿🔥"}
+
+
 @router.get("/all", status_code=status.HTTP_201_CREATED)
 def get_posts(db: Session = Depends(get_db)):
     # cursor.execute("""SELECT * FROM memories""")
@@ -80,9 +85,9 @@ def start_conversation(omr: schemas.MemoryCreate, db: Session = Depends(get_db))
         # Set the timestamp using the database server's time
         new_memo.created_at = func.now()
 
-        #db.add(new_memo)
-        #db.commit()
-        #db.refresh(new_memo)
+        db.add(new_memo)
+        db.commit()
+        db.refresh(new_memo)
 
         return new_memo
     except Exception as e:
