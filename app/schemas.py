@@ -8,7 +8,7 @@ class MemoryBase(BaseModel):
     llm_response: str
     conversations_summary: str
     # published: Optional[bool] = True
-    rating: Optional[int] = None
+    # rating: Optional[int] = None
 
 
 class MemoryCreate(MemoryBase):

@@ -9,7 +9,8 @@ from app.database import Base
 
 
 class Memory(Base):
-    __tablename__ = 'omr'
+    __tablename__ = 'memories'
+    #__tablename__ = 'omr'
     id = Column(Integer, primary_key=True, nullable=False, server_default=text('1'))
     user_message = Column(String, nullable=False)
     llm_response = Column(String, nullable=False)

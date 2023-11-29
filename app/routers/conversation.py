@@ -85,6 +85,9 @@ def start_conversation(omr: schemas.MemoryCreate, db: Session = Depends(get_db),
         # Set the conversation summary in the new_memo
         new_memo.conversations_summary = conversations_summary_json
 
+        # Set the owner_id to the ID of the current user
+        new_memo.owner_id = current_user.id
+
         # Set the timestamp using the database server's time
         new_memo.created_at = func.now()
 
