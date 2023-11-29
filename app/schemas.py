@@ -7,7 +7,7 @@ class MemoryBase(BaseModel):
     user_message: str
     llm_response: str
     conversations_summary: str
-    published: Optional[bool] = True
+    # published: Optional[bool] = True
     rating: Optional[int] = None
 
 
