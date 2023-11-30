@@ -10,19 +10,18 @@ from app.database import Base
 
 class Memory(Base):
     __tablename__ = 'memories'
-    #__tablename__ = 'omr'
-    id = Column(Integer, primary_key=True, nullable=False)
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     user_message = Column(String, nullable=False)
     llm_response = Column(String, nullable=False)
     conversations_summary = Column(String, nullable=False)
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, default=datetime.utcnow)
 
-    owner_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=True)
+    owner_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
 
 
 class User(Base):
     __tablename__ = 'users'
-    id = Column(Integer, primary_key=True, nullable=False)
+    id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     email = Column(String, nullable=False, unique=True)
     password = Column(String, nullable=False)
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, default=datetime.utcnow)

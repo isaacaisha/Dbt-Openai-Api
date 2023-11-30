@@ -4,7 +4,8 @@ import os
 import psycopg2
 import secrets
 import time
-from fastapi import FastAPI, status
+from fastapi import FastAPI, status, HTTPException
+from fastapi.responses import RedirectResponse
 from . import models
 from .database import engine
 from .routers import conversation, user, auth
@@ -41,7 +42,7 @@ while True:
         time.sleep(3)
 
 # Creating the SQL command to fetch all data from the OMR table
-memory_db = "SELECT * FROM omr"
+memory_db = "SELECT * FROM memories"
 
 # Executing the query and fetching all the data
 cursor.execute(memory_db)
@@ -71,10 +72,21 @@ app.include_router(user.router)
 app.include_router(auth.router)
 
 
+# @app.get("/", status_code=status.HTTP_201_CREATED)
+# async def root():
+#     return {"Be Good Doing Good By Acting Good ¡!¡": "Siisi Chacal 🔥👌🏿😇💪🏿🔥"}
+
+
 @app.get("/", status_code=status.HTTP_201_CREATED)
 async def root():
-    return {"Be Good Doing Good By Acting Good ¡!¡": "Siisi Chacal 🔥👌🏿😇💪🏿🔥"}
-
+    try:
+        # Assuming you want to redirect to the URL fetched from the environment variable
+        # redirect_url = os.environ['REDIRECT_URL_DBT_OPENAI']
+        redirect_url = os.environ['REDIRECT_URL_FASTAPI']
+        return RedirectResponse(url=redirect_url, status_code=status.HTTP_302_FOUND)
+    except KeyError:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                            detail="Redirect URL not found in environment variables")
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))

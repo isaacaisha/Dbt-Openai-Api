@@ -1,7 +1,10 @@
 from fastapi import Response, status, HTTPException, Depends, APIRouter
+from fastapi.responses import RedirectResponse
+from typing import List
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 import json
+import os
 from ..models import Memory
 from .. import models, schemas, oauth2
 from ..database import get_db
@@ -34,7 +37,18 @@ async def home():
     return {"Be Good Doing Good By Acting Good ¡!¡": "Siisi Chacal 🔥👌🏿😇💪🏿🔥"}
 
 
-@router.get("/all", status_code=status.HTTP_201_CREATED)
+# @router.get("/", status_code=status.HTTP_201_CREATED)
+# async def root():
+#     try:
+#         # Assuming you want to redirect to the URL fetched from the environment variable
+#         redirect_url = os.environ['REDIRECT_URL_FASTAPI']
+#         return RedirectResponse(url=redirect_url, status_code=status.HTTP_302_FOUND)
+#     except KeyError:
+#         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#                             detail="Redirect URL not found in environment variables")
+
+
+@router.get("/all", status_code=status.HTTP_201_CREATED, response_model=List[schemas.MemoryResponse])
 def get_posts(db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
     # cursor.execute("""SELECT * FROM memories""")
     # posts = cursor.fetchall()(db: Session = Depends(get_db)):
@@ -57,20 +71,24 @@ def get_conversation_summary(db: Session = Depends(get_db), current_user: int = 
 
 
 @router.post("/start", status_code=status.HTTP_201_CREATED, response_model=schemas.MemoryCreate)
-def start_conversation(omr: schemas.MemoryCreate, db: Session = Depends(get_db),
+def start_conversation(memory_: schemas.MemoryCreate, db: Session = Depends(get_db),
                        current_user=Depends(oauth2.get_current_user)):
     try:
         # Use SQLAlchemy ORM to insert a new record
-        new_memo = Memory(**omr.model_dump())
+        new_memo = Memory(user_message=memory_.user_message, llm_response=memory_.llm_response,
+                          conversations_summary=memory_.conversations_summary)
+
+        # Set the owner_id to the ID of the current user
+        new_memo.owner_id = current_user.id
 
         # Get LLM response using the user's message
-        llm_response = generate_llm_response(omr.user_message)
+        llm_response = generate_llm_response(memory_.user_message)
 
         # Update the new_memo with the LLM response
         new_memo.llm_response = llm_response
 
         # Save the conversation context
-        memory_summary.save_context({"input": omr.user_message}, {"output": llm_response})
+        memory_summary.save_context({"input": memory_.user_message}, {"output": llm_response})
 
         # Load the conversation context
         conversations_summary = memory_summary.load_memory_variables({})
@@ -78,20 +96,15 @@ def start_conversation(omr: schemas.MemoryCreate, db: Session = Depends(get_db),
         # Convert the dictionary to a JSON-formatted string
         conversations_summary_json = json.dumps(conversations_summary)
 
-        print(f'omr.user_message:\n{omr.user_message}\n')
-        print(f'llm_response:\n{llm_response}\n')
-        print(f'conversations_summary:\n{conversations_summary_json}\n')
-
         # Set the conversation summary in the new_memo
         new_memo.conversations_summary = conversations_summary_json
 
-        # Set the owner_id to the ID of the current user
-        new_memo.owner_id = current_user.id
+        print(f'omr.user_message:\n{memory_.user_message}\n')
+        print(f'llm_response:\n{llm_response}\n')
+        print(f'conversations_summary:\n{conversations_summary_json}\n')
 
-        # Set the timestamp using the database server's time
-        new_memo.created_at = func.now()
-
-        print(f'current_user: {current_user.email}')
+        print(f'current_user.id: {current_user.id}\n')
+        print(f'current_user.email: {current_user.email}\n')
 
         db.add(new_memo)
         db.commit()
