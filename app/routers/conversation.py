@@ -49,7 +49,6 @@ def convert_llm_response_to_audio(llm_response_text):
 
 @router.get("/", status_code=status.HTTP_201_CREATED)
 async def home():
-
     return {"Be Good Doing Good By Acting Good ¡!¡": "Siisi Chacal 🔥👌🏿😇💪🏿🔥"}
 
 
