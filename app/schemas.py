@@ -16,7 +16,7 @@ class MemoryCreate(MemoryBase):
 class MemoryResponse(MemoryBase):
     id: Optional[int] = None
     created_at: Optional[datetime] = None
-    owner_id: int
+    owner_id: Optional[int] = None
 
     class Config:
         from_attributes = True

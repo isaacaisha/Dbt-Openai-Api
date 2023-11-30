@@ -41,7 +41,7 @@ while True:
         print(f'Connecting to database failed:\nError: {error} 😭\n')
         time.sleep(3)
 
-# Creating the SQL command to fetch all data from the OMR table
+# Creating the SQL command to fetch all data from the memories table
 memory_db = "SELECT * FROM memories"
 
 # Executing the query and fetching all the data
