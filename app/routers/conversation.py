@@ -118,12 +118,13 @@ def start_conversation(memory_: schemas.MemoryCreate, db: Session = Depends(get_
         raise HTTPException(status_code=500, detail="Internal Server Error")
 
 
-@router.get("/audio", status_code=status.HTTP_201_CREATED)
+@router.get("/audio", status_code=status.HTTP_201_CREATED, response_model=List[schemas.MemoryResponse])
 async def audio_response(db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
     audio = db.query(models.Memory).all()
     print(f'audio response:\n{audio[-1:]}\n')
 
-    return {"message: Be Good Doing Good By Acting Good ¡!¡": audio[-1:]}
+    # return {"message: Be Good Doing Good By Acting Good ¡!¡": audio[-1:]}
+    return audio[-1:]
 
 
 @router.get("/get/{id}", status_code=status.HTTP_201_CREATED, response_model=schemas.MemoryResponse)

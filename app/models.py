@@ -1,8 +1,5 @@
 from sqlalchemy import Column, String, Integer, ForeignKey
-from sqlalchemy.orm import relationship
-from sqlalchemy.sql.expression import text
 from sqlalchemy.sql.sqltypes import TIMESTAMP
-from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 
 from app.database import Base
