@@ -15,6 +15,9 @@ class Memory(Base):
 
     owner_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
 
+    def __str__(self):
+        return f"Memory(id={self.id}, user_message='{self.user_message}', llm_response='{self.llm_response}')"
+
 
 class User(Base):
     __tablename__ = 'users'

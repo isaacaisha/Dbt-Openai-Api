@@ -18,6 +18,11 @@ class MemoryResponse(MemoryBase):
     created_at: Optional[datetime] = None
     owner_id: Optional[int] = None
 
+
+# Pydantic model for the form data
+class TextAreaForm(BaseModel):
+    writing_text: str
+
     class Config:
         from_attributes = True
 

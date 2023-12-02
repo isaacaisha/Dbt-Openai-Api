@@ -1,0 +1,315 @@
+ body {
+     <!--font-family: Arial, sans-serif;-->
+     text-align: center;
+     color: white;
+     background-image: url('../images/space.jpg');
+     background-size: cover;
+     background-position: center;
+    padding: 1rem;
+ }
+
+large-image {
+     width: 100%;
+     max-width: 600px;
+ }
+
+.completed {
+     text-decoration: 0.3rem line-through green;
+ }
+
+#content > div.container-fluid.mb-5 > div > div {
+    padding: 0.3rem;
+}
+
+h1 {
+    background-color: #fff;
+    border: 0.1rem solid #AEFAFC;
+    border-radius: 0.3rem;
+    color: #9126E8;
+    font-family: 'Merriweather', sans-serif;
+    font-display: swap;
+    font-weight: 900;
+    margin: 0;
+    text-align: center;
+    text-decoration: underline;
+}
+
+.jumbotron {
+    background-color: #47FFAC;
+    border: 0.1rem solid #AEFAFC;
+    animation: color-change 10s linear infinite;
+}
+
+@keyframes color-change {
+    25% {
+      background-color: #FC5378;
+    }
+
+    50% {
+      background-color: #4044E6;
+    }
+
+    100% {
+      background-color: #47FFAC;
+    }
+}
+
+h3 {
+    font-family: 'Lora', 'Times New Roman', serif;
+}
+
+.crown {
+    border: 0.1rem solid #AEFAFC;
+    border-radius: 2.3rem;
+    padding: 0.3rem;
+    width: 2.7rem;
+}
+
+.language-btn, .btn-story {
+    background-color: #9A30F3;
+    border: 0.1rem solid #AEFAFC;
+    border-radius: 0.3rem;
+    color: #fff;
+    font-family: 'Merriweather', sans-serif;
+    font-size: 1.3rem;
+    text-decoration: None;
+}
+
+.language-btn:hover {
+    color: #000;
+}
+
+#langAr {
+    background-image: linear-gradient(to bottom, #8e2cb8, #00FFAB);
+}
+
+#langEn {
+    background-image: linear-gradient(to bottom, #8e2cb8, #00FFAB);
+    transform: rotate(-45deg);
+}
+
+#langEs {
+    background-image: linear-gradient(to bottom, #8e2cb8, #00FFAB);
+    transform: rotate(45deg);
+}
+
+#langPt {
+    background-image: linear-gradient(to bottom, #8e2cb8, #00FFAB);
+}
+
+#langFr, .btn-story {
+    background-image: linear-gradient(to bottom, #00FFAB, #8e2cb8);
+}
+
+#userInput, #generatedText, #final-result-content.form-control.result, .textarea-memory {
+    border: 0.1rem solid #1295FA;
+    border-radius: 0.9rem;
+    color:#0041F6;
+    font-family: 'Montserrat', sans-serif;
+    font-display: swap;
+    height: 91px;
+    min-height: 55px;
+    padding: 0.3rem;
+    width: 100%;
+}
+
+.textarea-memory {
+    color: red;
+    height: 199px;
+    line-height: 1.9rem;
+    padding: 0.9rem;
+}
+
+#final-result-speech-content {
+    border: 0.1rem solid #1295FA;
+    border-radius: 0.9rem;
+    color:purple;
+    font-family: 'Merriweather', sans-serif;
+    font-display: swap;
+    height: 91px;
+    min-height: 55px;
+}
+
+#userInput::placeholder {
+    /* Center the placeholder text horizontally */
+    text-align: center;
+
+    /* Optionally, you can style the placeholder text further */
+    font-style: italic;
+    color: #999; /* Placeholder text color */
+}
+
+textarea#generatedText {
+    color: #096752;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    margin-bottom: 1rem;
+}
+
+.generate-text {
+    color: #fff;
+    background-color: #1295FA;
+    border: 0.1rem solid #AEFAFC;
+}
+
+.generate-text:hover {
+    background-color: #1295FA;
+    border: 0.1rem solid #73DD7E;
+    color: #73DD7E;
+}
+
+# --------------------------------------------------- 🔥👌🏿💚😇❤️🔥 ---------------------------------------------------#
+.label_ {
+    background-color: #fff;
+    border-radius: 19%;
+    color: #096752;
+    font-size: 0.7rem;
+    padding: 0.1rem;
+}
+
+#start-button, #final_result {
+    color: #fff;
+    background-color: #1295FA;
+    border: 0.1rem solid #AEFAFC;
+    font-family: 'Lora', 'Times New Roman', serif;
+}
+
+#start-button:hover, #final_result:hover {
+    color: #73DD7E;
+}
+
+#speechRecognitionButton, #final_result_speech {
+    color: #fff;
+    background-color: #30ABB7;
+    border: 0.1rem solid #AEFAFC;
+    font-family: 'Cardo';
+}
+
+#speechRecognitionButton:hover, #final_result_speech:hover {
+    background-color: 9A30F3;
+    border: 0.1rem solid #73DD7E;
+    color: #9A30F3;
+}
+
+#generateButton, .btn-story:hover {
+    color: #37EC37;
+}
+
+#generateButton:hover {
+    color: #fff;
+}
+
+.generate-text {
+    color: #fff;
+    background-color: #9A30F3;
+    border: 0.1rem solid #AEFAFC;
+    margin-top: 1rem;
+    font-family: 'Merriweather', sans-serif;
+}
+
+.generate-text:hover {
+    background-color: #9A30F3;
+    color: #73DD7E;
+}
+
+#final-result-content {
+    color: #1295FA;
+}
+
+textarea#writing_text.form-control, #final-result-content {
+    min-height: 55px;
+    font-family: 'Merriweather', sans-serif;
+    height: 55px;
+}
+
+#final-result-content {
+    margin: 0 0 1rem;
+    background-color: #fff;
+    padding: 0.5rem;
+}
+
+#showResultButton {
+    font-size: 1.09rem;
+}
+
+.info-btn > a {
+    color: #fff;
+    font-family: 'Merriweather', sans-serif;
+    text-decoration: None;
+}
+
+.info-btn > a:hover {
+    color: #000;
+}
+
+.conversation-details {
+    background-image: linear-gradient(to bottom, #8e2cb8, #00FFAB);
+    border: 0.1rem solid #AEFAFC;
+    border-radius: 0.3rem;
+    font-size: 0.7rem;
+}
+
+.fastapi-docs {
+    background-image: linear-gradient(to bottom, #00FFAB, #8e2cb8);
+    border: 0.1rem solid #AEFAFC;
+    border-radius: 0.3rem;
+    font-size: 0.7rem;
+    transform: rotate(37deg);
+}
+
+.fastapi-redoc {
+    background-image: linear-gradient(to bottom, #00FFAB, #8e2cb8);
+    border: 0.1rem solid #AEFAFC;
+    border-radius: 0.3rem;
+    font-size: 0.7rem;
+    transform: rotate(-37deg);
+}
+
+.error {
+    color: crimson;
+    background-color: #fff;
+    font-family: 'Cardo';
+    margin: 1rem 1rem 0;
+    padding: 0.1rem;
+    text-align: center;
+    white-space: pre-line;
+}
+
+hr {
+    border: 0.1rem solid;
+    border-radius: 0.5rem;
+    margin: 0 3rem;
+    #margin-top: 1.9rem;
+}
+
+#footer {
+    margin-bottom: 1.09rem;
+    margin-top: 1.09rem;
+    text-align: center;
+}
+
+.fa-inverse {
+    background-color: #9126E8;
+    border: 0.1rem solid #AEFAFC;
+    border-radius: 55%;
+    color: #fff;
+}
+
+.fa-inverse:hover {
+    color: #6ABFA6;
+    width: 3.7rem;
+}
+
+.fas {
+    color: transparent !important;
+}
+
+.copyright {
+    background-color: #AEFAFC;
+    border: 0.1rem solid #1295FA;
+    border-radius: 0.5rem;
+    color: #9A30F3;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 0.73rem;
+    padding: 0.3rem;
+}
+# --------------------------------------------------- 🔥👌🏿💚😇❤️🔥 ---------------------------------------------------#
