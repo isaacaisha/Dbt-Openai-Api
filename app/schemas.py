@@ -30,6 +30,7 @@ class TextAreaForm(BaseModel):
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
+    name: str
     pass
 
 
