@@ -13,7 +13,7 @@ _ = load_dotenv(find_dotenv())
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='login')
 
 # to get a string like this run:
-# openssl rand -hex 32
+# openssl rand - hex 32
 SECRET_KEY = os.environ['OAUTH2_SECRET_KEY']
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 55

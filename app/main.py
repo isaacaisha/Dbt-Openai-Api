@@ -41,8 +41,8 @@ while True:
         print(f'Connecting to database failed:\nError: {error} 😭\n')
         time.sleep(3)
 
-# Creating the SQL command to fetch all data from the memories table
-memory_db = "SELECT * FROM memories"
+# Creating the SQL command to fetch all data from the "api_memories" table
+memory_db = "SELECT * FROM api_memories"
 
 # Executing the query and fetching all the data
 cursor.execute(memory_db)
