@@ -6,21 +6,21 @@ from app.database import Base
 
 
 class Memory(Base):
-    __tablename__ = 'memories'
+    __tablename__ = 'api_memories'
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     user_message = Column(String, nullable=False)
     llm_response = Column(String, nullable=False)
     conversations_summary = Column(String, nullable=False)
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, default=datetime.utcnow)
 
-    owner_id = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
+    owner_id = Column(Integer, ForeignKey('api_users.id', ondelete='CASCADE'), nullable=False)
 
     def __str__(self):
         return f"Memory(id={self.id}, user_message='{self.user_message}', llm_response='{self.llm_response}')"
 
 
 class User(Base):
-    __tablename__ = 'users'
+    __tablename__ = 'api_users'
     id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
     email = Column(String, nullable=False, unique=True)
     password = Column(String, nullable=False)
