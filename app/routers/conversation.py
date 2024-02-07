@@ -54,9 +54,18 @@ def get_all_conversations(db: Session = Depends(get_db), current_user=Depends(oa
     # public:
     histories = db.query(models.Memory).all()
 
-    print(f'all conversation:\n{histories} 👌🏿\n')
+    # Generate MemoryResponse objects with conversation_id properly set (return "conversation_id" intsead of just "id")
+    memory_responses = [
+        schemas.MemoryResponse(**{
+            **history.__dict__,
+            'conversation_id': history.id,
+            'owner': history.owner
+        }) for history in histories
+    ]
 
-    return histories
+    print(f'all conversation:\n{memory_responses} 👌🏿\n')
+
+    return memory_responses
 
 
 @router.get("/private", status_code=status.HTTP_201_CREATED, response_model=List[schemas.MemoryResponse])
@@ -66,9 +75,18 @@ def get_private_conversations(db: Session = Depends(get_db), current_user=Depend
     owner_id = current_user.id
     histories = db.query(models.Memory).filter_by(owner_id=owner_id).all()
 
-    print(f'private conversation:\n{histories} 👌🏿\n')
+    # Generate MemoryResponse objects with conversation_id properly set (return "conversation_id" intsead of just "id")
+    memory_responses = [
+        schemas.MemoryResponse(**{
+            **history.__dict__,
+            'conversation_id': history.id,
+            'owner': history.owner
+        }) for history in histories
+    ]
 
-    return histories
+    print(f'private conversation:\n{memory_responses} 👌🏿\n')
+
+    return memory_responses
 
 
 @router.get("/summary", status_code=status.HTTP_201_CREATED)
@@ -136,17 +154,26 @@ def start_conversation(memory_: schemas.MemoryCreate, db: Session = Depends(get_
 
 @router.get("/audio", status_code=status.HTTP_201_CREATED, response_model=List[schemas.MemoryResponse])
 async def audio_response(db: Session = Depends(get_db), current_user=Depends(oauth2.get_current_user)):
-
     # # public
     # audio = db.query(models.Memory).all()
 
     # private:
     owner_id = current_user.id
     audio = db.query(models.Memory).filter_by(owner_id=owner_id).all()
+
+    # Generate MemoryResponse objects with conversation_id properly set (return "conversation_id" intsead of just "id")
+    audio_responses = [
+        schemas.MemoryResponse(**{
+            **history.__dict__,
+            'conversation_id': history.id,
+            'owner': history.owner
+        }) for history in audio
+    ]
+
     print(f'audio response:\n{audio[-1:]}\n')
 
-    # return {"message: Be Good Doing Good By Acting Good ¡!¡": audio[-1:]}
-    return audio[-1:]
+    # return {"message: Be Good Doing Good By Acting Good ¡!¡": audio_responses[-1:]}
+    return audio_responses[-1:]
 
 
 @router.get("/get-public/{id}", status_code=status.HTTP_201_CREATED, response_model=schemas.MemoryResponse)
@@ -161,6 +188,10 @@ def get_conversation_by_id(id: int, db: Session = Depends(get_db),
 
     # Use Pydantic's model.dict() to convert the SQLAlchemy model to a dictionary
     converse_dict = schemas.MemoryResponse(**converse.__dict__).model_dump()
+
+    # Set conversation_id to the actual ID of the conversation
+    converse_dict['conversation_id'] = converse.id
+    
     print(f'get conversation with ID:\n{converse_dict}\n')
 
     return converse_dict
@@ -182,13 +213,17 @@ def get_conversation_by_id(id: int, db: Session = Depends(get_db),
 
     # Use Pydantic's model.dict() to convert the SQLAlchemy model to a dictionary
     converse_dict = schemas.MemoryResponse(**converse.__dict__).model_dump()
+
+    # Set conversation_id to the actual ID of the conversation
+    converse_dict['conversation_id'] = converse.id
+
     print(f'get conversation with ID:\n{converse_dict}\n')
 
     return converse_dict
 
 
-@router.put("/update/{id}", response_model=schemas.MemoryResponse)
-def upd_conversation(id: int, updated_memory: schemas.MemoryResponse, db: Session = Depends(get_db),
+@router.put("/update/{id}", response_model=schemas.MemoryUpdate)
+def upd_conversation(id: int, updated_memory: schemas.MemoryUpdate, db: Session = Depends(get_db),
                      current_user=Depends(oauth2.get_current_user)):
     # Check if the conversation exists in the database
     existing_memory_query = db.query(models.Memory).filter(models.Memory.id == id)

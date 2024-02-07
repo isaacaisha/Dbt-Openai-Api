@@ -23,13 +23,14 @@ class UserOut(BaseModel):
 
 
 class MemoryResponse(MemoryBase):
-    id: Optional[int] = None
-    created_at: Optional[datetime] = None
+    conversation_id: Optional[int] = None
+    owner: Optional[UserOut] = None
+
+
+class MemoryUpdate(MemoryBase):
     owner_id: Optional[int] = None
-    owner: Optional[UserOut] = None 
 
 
-# Pydantic model for the form data
 class TextAreaForm(BaseModel):
     writing_text: str
 
