@@ -13,10 +13,20 @@ class MemoryCreate(MemoryBase):
     pass
 
 
+class UserOut(BaseModel):
+    id: int
+    email: EmailStr
+    created_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
 class MemoryResponse(MemoryBase):
     id: Optional[int] = None
     created_at: Optional[datetime] = None
     owner_id: Optional[int] = None
+    owner: Optional[UserOut] = None 
 
 
 # Pydantic model for the form data
@@ -32,15 +42,6 @@ class UserCreate(BaseModel):
     password: str
     name: str
     pass
-
-
-class UserOut(BaseModel):
-    id: int
-    email: EmailStr
-    created_at: Optional[datetime] = None
-
-    class Config:
-        from_attributes = True
 
 
 class UserLogin(BaseModel):

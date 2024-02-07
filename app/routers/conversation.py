@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 # from sqlalchemy import func
 import json
 # import os
-from ..models import Memory
+from ..models import Memory, joinedload
 from .. import models, schemas, oauth2
 from ..database import get_db
 from langchain.chat_models import ChatOpenAI
@@ -66,7 +66,7 @@ def get_private_conversations(db: Session = Depends(get_db), current_user=Depend
     owner_id = current_user.id
     histories = db.query(models.Memory).filter_by(owner_id=owner_id).all()
 
-    print(f'all conversation:\n{histories} 👌🏿\n')
+    print(f'private conversation:\n{histories} 👌🏿\n')
 
     return histories
 
@@ -152,7 +152,7 @@ async def audio_response(db: Session = Depends(get_db), current_user=Depends(oau
 @router.get("/get-public/{id}", status_code=status.HTTP_201_CREATED, response_model=schemas.MemoryResponse)
 def get_conversation_by_id(id: int, db: Session = Depends(get_db),
                            current_user: int = Depends(oauth2.get_current_user)):
-    converse = db.query(models.Memory).filter(models.Memory.id == id).first()
+    converse = db.query(models.Memory).filter(models.Memory.id == id).options(joinedload(models.Memory.owner)).first()
 
     if not converse:
         print(f'conversations with ID: "{id}" was not found')
@@ -169,7 +169,7 @@ def get_conversation_by_id(id: int, db: Session = Depends(get_db),
 @router.get("/get-private/{id}", status_code=status.HTTP_201_CREATED, response_model=schemas.MemoryResponse)
 def get_conversation_by_id(id: int, db: Session = Depends(get_db),
                            current_user=Depends(oauth2.get_current_user)):
-    converse = db.query(models.Memory).filter(models.Memory.id == id).first()
+    converse = db.query(models.Memory).filter(models.Memory.id == id).options(joinedload(models.Memory.owner)).first()
 
     if not converse:
         print(f'conversations with ID: "{id}" was not found')

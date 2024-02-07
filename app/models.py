@@ -1,4 +1,5 @@
 from sqlalchemy import Column, String, Integer, ForeignKey
+from sqlalchemy.orm import relationship, joinedload
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 from datetime import datetime
 
@@ -14,6 +15,8 @@ class Memory(Base):
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, default=datetime.utcnow)
 
     owner_id = Column(Integer, ForeignKey('api_users.id', ondelete='CASCADE'), nullable=False)
+    
+    owner = relationship('User', back_populates='memories')
 
     def __str__(self):
         return f"Memory(id={self.id}, user_message='{self.user_message}', llm_response='{self.llm_response}')"
@@ -26,3 +29,5 @@ class User(Base):
     password = Column(String, nullable=False)
     name = Column(String, nullable=False)
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, default=datetime.utcnow)
+
+    memories = relationship('Memory', back_populates='owner')
