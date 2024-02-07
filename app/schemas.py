@@ -33,6 +33,7 @@ class MemoryResponse(MemoryBase):
 
 class MemoryUpdate(MemoryBase):
     owner_id: Optional[int] = None
+    owner: Optional[UserOut] = None 
 
 
 class TextAreaForm(BaseModel):
