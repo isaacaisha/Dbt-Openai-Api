@@ -1,6 +1,6 @@
 from fastapi import Response, status, HTTPException, Depends, APIRouter
 # from fastapi.responses import RedirectResponse
-from typing import List
+from typing import List, Optional
 from sqlalchemy.orm import Session
 # from sqlalchemy import func
 import json
@@ -47,12 +47,13 @@ async def home():
 
 
 @router.get("/all", status_code=status.HTTP_201_CREATED, response_model=List[schemas.MemoryResponse])
-def get_all_conversations(db: Session = Depends(get_db), current_user=Depends(oauth2.get_current_user)):
+def get_all_conversations(db: Session = Depends(get_db), current_user=Depends(oauth2.get_current_user),
+                          limit: int = 3, skip: int = 0, search: Optional[str] = ""):
     # cursor.execute("""SELECT * FROM memories""")
     # posts = cursor.fetchall()(db: Session = Depends(get_db)):
 
     # public:
-    histories = db.query(models.Memory).all()
+    histories = db.query(models.Memory).filter(models.Memory.user_message.contains(search)).limit(limit).offset(skip).all()
 
     # Generate MemoryResponse objects with conversation_id properly set (return "conversation_id" intsead of just "id")
     memory_responses = [
@@ -69,11 +70,12 @@ def get_all_conversations(db: Session = Depends(get_db), current_user=Depends(oa
 
 
 @router.get("/private", status_code=status.HTTP_201_CREATED, response_model=List[schemas.MemoryResponse])
-def get_private_conversations(db: Session = Depends(get_db), current_user=Depends(oauth2.get_current_user)):
+def get_private_conversations(db: Session = Depends(get_db), current_user=Depends(oauth2.get_current_user),
+                          limit: int = 3, skip: int = 0, search: Optional[str] = ""):
 
     # private:
     owner_id = current_user.id
-    histories = db.query(models.Memory).filter_by(owner_id=owner_id).all()
+    histories = db.query(models.Memory).filter(models.Memory.user_message.contains(search)).filter_by(owner_id=owner_id).limit(limit).offset(skip).all()
 
     # Generate MemoryResponse objects with conversation_id properly set (return "conversation_id" intsead of just "id")
     memory_responses = [
