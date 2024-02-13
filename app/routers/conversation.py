@@ -92,10 +92,12 @@ def get_private_conversations(db: Session = Depends(get_db), current_user=Depend
 
 
 @router.get("/summary", status_code=status.HTTP_201_CREATED)
-def get_conversation_summary(db: Session = Depends(get_db), current_user=Depends(oauth2.get_current_user)):
+def get_conversation_summary(db: Session = Depends(get_db), current_user=Depends(oauth2.get_current_user),
+                          limit: int = 3, skip: int = 0, search: Optional[str] = ""):
+    
     owner_id = current_user.id
     conversation_summaries_all = [summary.conversations_summary for summary in
-                                  db.query(models.Memory).filter_by(owner_id=owner_id).all()]
+                                  db.query(models.Memory).filter(models.Memory.user_message.contains(search)).filter_by(owner_id=owner_id).limit(limit).offset(skip).all()]
 
     head_summaries = conversation_summaries_all[:3]
     tail_summaries = conversation_summaries_all[-3:]
