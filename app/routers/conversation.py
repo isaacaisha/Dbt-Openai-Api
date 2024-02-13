@@ -1,10 +1,12 @@
-from fastapi import Response, status, HTTPException, Depends, APIRouter
-# from fastapi.responses import RedirectResponse
-from typing import List, Optional
-from sqlalchemy.orm import Session
-# from sqlalchemy import func
 import json
-# import os
+import io
+
+from fastapi import Response, status, HTTPException, Depends, APIRouter
+from typing import List, Optional
+from fastapi.responses import StreamingResponse
+from gtts import gTTS
+from sqlalchemy.orm import Session
+
 from ..models import Memory, joinedload
 from .. import models, schemas, oauth2
 from ..database import get_db
@@ -178,6 +180,35 @@ async def audio_response(db: Session = Depends(get_db), current_user=Depends(oau
 
     # return {"message: Be Good Doing Good By Acting Good ¡!¡": audio_responses[-1:]}
     return audio_responses[-1:]
+
+
+def convert_llm_response_to_audio(llm_response_text):
+    # Create a gTTS object with the text
+    tts = gTTS(text=llm_response_text, lang='en')
+
+    # Save the audio to an in-memory file
+    audio_file = io.BytesIO()
+    tts.write_to_fp(audio_file)
+
+    # Seek to the beginning of the file
+    audio_file.seek(0)
+
+    return audio_file
+
+
+@router.get("/play-audio", status_code=status.HTTP_200_OK)
+async def play_last_llm_response_as_audio(db: Session = Depends(get_db), current_user=Depends(oauth2.get_current_user)):
+    # Retrieve the last llm_response for the current user from the database
+    audio_record = db.query(models.Memory).filter_by(owner_id=current_user.id).order_by(models.Memory.id.desc()).first()
+
+    if not audio_record or not audio_record.llm_response:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="LLM response not found")
+
+    # Convert the llm_response to an audio file (assuming you have a function to do this)
+    audio_data = convert_llm_response_to_audio(audio_record.llm_response)
+
+    # Return the audio file as a response
+    return StreamingResponse(audio_data, media_type="audio/mpeg")
 
 
 @router.get("/get-public/{id}", status_code=status.HTTP_201_CREATED, response_model=schemas.MemoryResponse)
