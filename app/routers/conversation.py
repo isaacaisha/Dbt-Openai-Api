@@ -194,7 +194,7 @@ async def audio_response(db: Session = Depends(get_db), current_user=Depends(oau
     return audio_responses[-1:]
 
 
-@router.get("/play-audio/{audio_record_id}", status_code=status.HTTP_201_CREATED, response_model=List[schemas.MemoryResponse])
+@router.get("/play-audio-public/{audio_record_id}", status_code=status.HTTP_201_CREATED, response_model=List[schemas.MemoryResponse])
 async def play_audio_by_id(audio_record_id: int, db: Session = Depends(get_db)):
     
     # Retrieve the audio record by its ID from the database
@@ -228,6 +228,49 @@ async def play_audio_by_id(audio_record_id: int, db: Session = Depends(get_db)):
     }
 
     # Print the indented JSON response
+    print(f'audio_data:\n{json.dumps(response_data, indent=4)}')
+
+    # Return the audio file as a streaming response along with the audio record information
+    return StreamingResponse(audio_data, media_type="audio/mpeg", headers={"X-Audio-Record": json.dumps(response_data["audio_record"])})
+
+
+@router.get("/play-audio-private/{audio_record_id}", status_code=status.HTTP_200_OK)
+async def play_audio_by_id(audio_record_id: int, db: Session = Depends(get_db), current_user=Depends(oauth2.get_current_user)):
+    # Retrieve the audio record by its ID from the database
+    audio_record = db.query(models.Memory).filter(models.Memory.id == audio_record_id).first()
+
+    if not audio_record or not audio_record.llm_response:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"LLM response for record {audio_record_id} not found")
+
+    # Check if the authenticated user is the owner of the audio record
+    if audio_record.owner_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="You are not authorized to access this audio record")
+
+    # Convert the LLM response to an audio file
+    audio_data = convert_llm_response_to_audio(audio_record.llm_response)
+    
+    # Extract owner information
+    owner_info = audio_record.owner
+
+    # Convert the datetime object to string
+    created_at_str = owner_info.created_at.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+
+    # Construct the response JSON containing the audio data and audio record information
+    response_data = {
+        "audio_record": {
+            "id": audio_record.id,
+            "user_message": audio_record.user_message,
+            "llm_response": audio_record.llm_response,
+            "conversations_summary": audio_record.conversations_summary,
+            "owner": {
+                "id": owner_info.id,
+                "email": owner_info.email,
+                "created_at": created_at_str,  # Convert datetime to string
+            }
+        }
+    }
+
+    # Log the audio data and response data for debugging
     print(f'audio_data:\n{json.dumps(response_data, indent=4)}')
 
     # Return the audio file as a streaming response along with the audio record information
