@@ -207,8 +207,20 @@ async def play_last_llm_response_as_audio(db: Session = Depends(get_db), current
     # Convert the llm_response to an audio file (assuming you have a function to do this)
     audio_data = convert_llm_response_to_audio(audio_record.llm_response)
 
-    # Return the audio file as a response
-    return StreamingResponse(audio_data, media_type="audio/mpeg")
+    print(f'audio_data:\n{audio_record}')
+
+    # Construct the response JSON containing the audio data and audio record information
+    response_data = {
+        "audio_data": audio_data.read(),  # Read the audio data from the BytesIO object
+        "audio_record": {
+            "id": audio_record.id,
+            "llm_response": audio_record.llm_response,
+            # Add more fields from the audio_record as needed
+        }
+    }
+
+    # Return the audio file as a streaming response along with the audio record information
+    return StreamingResponse(audio_data, media_type="audio/mpeg", headers={"X-Audio-Record": json.dumps(response_data["audio_record"])})
 
 
 @router.get("/get-public/{id}", status_code=status.HTTP_201_CREATED, response_model=schemas.MemoryResponse)
