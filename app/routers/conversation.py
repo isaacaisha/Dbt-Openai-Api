@@ -32,6 +32,20 @@ def generate_llm_response(user_message):
     return conversation.predict(input=user_message)
 
 
+def convert_llm_response_to_audio(llm_response_text):
+    # Create a gTTS object with the text
+    tts = gTTS(text=llm_response_text, lang='en')
+
+    # Save the audio to an in-memory file
+    audio_file = io.BytesIO()
+    tts.write_to_fp(audio_file)
+
+    # Seek to the beginning of the file
+    audio_file.seek(0)
+
+    return audio_file
+
+
 @router.get("/", status_code=status.HTTP_201_CREATED)
 async def home():
     return {"Be Good Doing Good By Acting Good ¡!¡": "Siisi Chacal 🔥👌🏿😇💪🏿🔥"}
@@ -182,20 +196,6 @@ async def audio_response(db: Session = Depends(get_db), current_user=Depends(oau
     return audio_responses[-1:]
 
 
-def convert_llm_response_to_audio(llm_response_text):
-    # Create a gTTS object with the text
-    tts = gTTS(text=llm_response_text, lang='en')
-
-    # Save the audio to an in-memory file
-    audio_file = io.BytesIO()
-    tts.write_to_fp(audio_file)
-
-    # Seek to the beginning of the file
-    audio_file.seek(0)
-
-    return audio_file
-
-
 @router.get("/play-audio", status_code=status.HTTP_200_OK)
 async def play_last_llm_response_as_audio(db: Session = Depends(get_db), current_user=Depends(oauth2.get_current_user)):
     # Retrieve the last llm_response for the current user from the database
@@ -211,7 +211,6 @@ async def play_last_llm_response_as_audio(db: Session = Depends(get_db), current
 
     # Construct the response JSON containing the audio data and audio record information
     response_data = {
-        "audio_data": audio_data.read(),  # Read the audio data from the BytesIO object
         "audio_record": {
             "id": audio_record.id,
             "llm_response": audio_record.llm_response,
