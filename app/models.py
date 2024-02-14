@@ -31,3 +31,9 @@ class User(Base):
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, default=datetime.utcnow)
 
     memories = relationship('Memory', back_populates='owner')
+
+
+class Vote(Base):
+    __tablename__ = 'api_votes'
+    user_id = Column(Integer, ForeignKey("api_users.id", ondelete="CASCADE"), primary_key=True)
+    post_id = Column(Integer, ForeignKey("api_memories.id", ondelete="CASCADE"), primary_key=True)

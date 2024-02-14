@@ -6,7 +6,7 @@ from fastapi import FastAPI, status, HTTPException
 from fastapi.responses import RedirectResponse
 from . import models
 from .database import engine
-from .routers import conversation, user, auth
+from .routers import conversation, user, auth, vote
 from dotenv import load_dotenv, find_dotenv
 
 
@@ -29,6 +29,7 @@ DATABASE_URL = os.environ['DATABASE_URL']
 app.include_router(conversation.router)
 app.include_router(user.router)
 app.include_router(auth.router)
+app.include_router(vote.router)
 
 
 # @app.get("/", status_code=status.HTTP_201_CREATED)
