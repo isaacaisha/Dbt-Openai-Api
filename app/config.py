@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     access_token_expire_minutes: str 
 
     class Config:
-        env_file = ".env"
+        env_file = ".env_database"
 
 # Create an instance of the Settings class
 settings = Settings()
