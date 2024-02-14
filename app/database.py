@@ -18,7 +18,6 @@ load_dotenv()
 #     f"postgresql://{settings.user}:{settings.password}@{settings.host}:{settings.port}/{settings.database}"
 # )
 
-
 SQLALCHEMY_DATABASE_URL = (
     f"postgresql://{settings.user}:{settings.password}@{settings.host}:{settings.port}/{settings.database}"
 )
