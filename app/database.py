@@ -20,7 +20,8 @@ load_dotenv()
 
 
 SQLALCHEMY_DATABASE_URL = (
-    f"postgresql://{settings.user}:{settings.password}@{settings.host}:{settings.port}/{settings.database}"
+    f"postgresql://{os.environ['USER']}:{os.environ['PASSWORD']}@"
+    f"{os.environ['HOST']}:{os.environ['PORT']}/{os.environ['DATABASE']}"
 )
 
 
