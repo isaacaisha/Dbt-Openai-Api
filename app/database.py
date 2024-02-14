@@ -6,13 +6,23 @@ from dotenv import load_dotenv
 import psycopg2
 import time
 
+from .config import settings
+
+
 load_dotenv()
 
 
+# Construct the SQLALCHEMY_DATABASE_URL using the settings
 SQLALCHEMY_DATABASE_URL = (
-    f"postgresql://{os.environ['user']}:{os.environ['password']}@"
-    f"{os.environ['host']}:{os.environ['port']}/{os.environ['database']}"
+    f"postgresql://{settings.user}:{settings.password}@{settings.host}:{settings.port}/{settings.database}"
 )
+
+
+#SQLALCHEMY_DATABASE_URL = (
+#    f"postgresql://{os.environ['USER']}:{os.environ['PASSWORD']}@"
+#    f"{os.environ['HOST']}:{os.environ['PORT']}/{os.environ['DATABASE']}"
+#)
+
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

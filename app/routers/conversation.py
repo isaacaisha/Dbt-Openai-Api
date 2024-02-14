@@ -236,6 +236,7 @@ async def play_audio_by_id(audio_record_id: int, db: Session = Depends(get_db)):
 
 @router.get("/play-audio-private/{audio_record_id}", status_code=status.HTTP_200_OK)
 async def play_audio_by_id(audio_record_id: int, db: Session = Depends(get_db), current_user=Depends(oauth2.get_current_user)):
+    
     # Retrieve the audio record by its ID from the database
     audio_record = db.query(models.Memory).filter(models.Memory.id == audio_record_id).first()
 
