@@ -19,10 +19,9 @@ load_dotenv()
 # )
 
 SQLALCHEMY_DATABASE_URL = (
-    f"postgresql://{os.environ['USER']}:{os.environ['PASSWORD']}@"
-    f"{os.environ['HOST']}:{os.environ['PORT']}/{os.environ['DATABASE']}"
+    f"postgresql://{os.environ['user']}:{os.environ['password']}@"
+    f"{os.environ['host']}:{os.environ['port']}/{os.environ['database']}"
 )
-
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
