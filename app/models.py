@@ -17,6 +17,7 @@ class Memory(Base):
     owner_id = Column(Integer, ForeignKey('api_users.id', ondelete='CASCADE'), nullable=False)
     
     owner = relationship('User', back_populates='memories')
+    votes = relationship("Vote", back_populates="memory")
 
     def __str__(self):
         return f"Memory(id={self.id}, user_message='{self.user_message}', llm_response='{self.llm_response}')"
@@ -37,3 +38,6 @@ class Vote(Base):
     __tablename__ = 'api_votes'
     user_id = Column(Integer, ForeignKey("api_users.id", ondelete="CASCADE"), primary_key=True)
     post_id = Column(Integer, ForeignKey("api_memories.id", ondelete="CASCADE"), primary_key=True)
+
+    memory_id = Column(Integer, ForeignKey('memories.id'))
+    memory = relationship("Memory", back_populates="votes")

@@ -5,6 +5,7 @@ from fastapi import Response, status, HTTPException, Depends, APIRouter
 from typing import List, Optional
 from fastapi.responses import StreamingResponse
 from gtts import gTTS
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from ..models import Memory, joinedload
@@ -65,42 +66,66 @@ async def home():
 @router.get("/all", status_code=status.HTTP_201_CREATED, response_model=List[schemas.MemoryResponse])
 def get_all_conversations(db: Session = Depends(get_db), current_user=Depends(oauth2.get_current_user),
                           limit: int = 3, skip: int = 0, search: Optional[str] = ""):
-    # cursor.execute("""SELECT * FROM memories""")
-    # posts = cursor.fetchall()(db: Session = Depends(get_db)):
+    
+    # Perform the join with Vote and count the number of votes for each Memory
+    results = db.query(models.Memory, func.count(models.Vote.post_id).label("likes")) \
+        .outerjoin(models.Vote, models.Vote.post_id == models.Memory.id) \
+        .group_by(models.Memory.id) \
+        .limit(limit) \
+        .offset(skip) \
+        .all()
 
-    # public:
-    histories = db.query(models.Memory).filter(models.Memory.user_message.contains(search)).limit(limit).offset(skip).all()
+    memory_responses = []
+    for history, likes_count in results:
+        owner = schemas.UserOut(id=history.owner.id, email=history.owner.email, created_at=history.owner.created_at)
 
-    # Generate MemoryResponse objects with conversation_id properly set (return "conversation_id" intsead of just "id")
-    memory_responses = [
-        schemas.MemoryResponse(**{
-            **history.__dict__,
-            'conversation_id': history.id,
-            'owner': history.owner
-        }) for history in histories
-    ]
+        # Create a MemoryResponse instance for the current memory
+        memory_response = schemas.MemoryResponse(
+            conversation_id=history.id,  # id is the conversation_id
+            user_message=history.user_message,
+            llm_response=history.llm_response,
+            conversations_summary=history.conversations_summary,
+            owner=owner,
+            likes=likes_count
+        )
 
-    print(f'all conversation:\n{memory_responses} 👌🏿\n')
+        # Append the MemoryResponse instance to the list
+        memory_responses.append(memory_response)
 
     return memory_responses
 
 
 @router.get("/private", status_code=status.HTTP_201_CREATED, response_model=List[schemas.MemoryResponse])
 def get_private_conversations(db: Session = Depends(get_db), current_user=Depends(oauth2.get_current_user),
-                          limit: int = 3, skip: int = 0, search: Optional[str] = ""):
+                              limit: int = 3, skip: int = 0, search: Optional[str] = ""):
 
     # private:
     owner_id = current_user.id
-    histories = db.query(models.Memory).filter(models.Memory.user_message.contains(search)).filter_by(owner_id=owner_id).limit(limit).offset(skip).all()
+    results = db.query(models.Memory, func.count(models.Vote.post_id).label("likes")) \
+        .outerjoin(models.Vote, models.Vote.post_id == models.Memory.id) \
+        .filter(models.Memory.user_message.contains(search)) \
+        .filter(models.Memory.owner_id == owner_id) \
+        .group_by(models.Memory.id) \
+        .limit(limit) \
+        .offset(skip) \
+        .all()
 
-    # Generate MemoryResponse objects with conversation_id properly set (return "conversation_id" intsead of just "id")
-    memory_responses = [
-        schemas.MemoryResponse(**{
-            **history.__dict__,
-            'conversation_id': history.id,
-            'owner': history.owner
-        }) for history in histories
-    ]
+    memory_responses = []
+    for history, likes_count in results:
+        owner = schemas.UserOut(id=history.owner.id, email=history.owner.email, created_at=history.owner.created_at)
+
+        # Create a MemoryResponse instance for the current memory
+        memory_response = schemas.MemoryResponse(
+            conversation_id=history.id,  # id is the conversation_id
+            user_message=history.user_message,
+            llm_response=history.llm_response,
+            conversations_summary=history.conversations_summary,
+            owner=owner,
+            likes=likes_count
+        )
+
+        # Append the MemoryResponse instance to the list
+        memory_responses.append(memory_response)
 
     print(f'private conversation:\n{memory_responses} 👌🏿\n')
 
@@ -177,20 +202,31 @@ async def audio_response(db: Session = Depends(get_db), current_user=Depends(oau
 
     # private:
     owner_id = current_user.id
-    audio = db.query(models.Memory).filter_by(owner_id=owner_id).all()
+    results = db.query(models.Memory, func.count(models.Vote.post_id).label("likes")) \
+        .outerjoin(models.Vote, models.Vote.post_id == models.Memory.id) \
+        .filter(models.Memory.owner_id == owner_id) \
+        .group_by(models.Memory.id) \
+        .all()
 
-    # Generate MemoryResponse objects with conversation_id properly set (return "conversation_id" intsead of just "id")
-    audio_responses = [
-        schemas.MemoryResponse(**{
-            **history.__dict__,
-            'conversation_id': history.id,
-            'owner': history.owner
-        }) for history in audio
-    ]
+    audio_responses = []
+    for history, likes_count in results:
+        owner = schemas.UserOut(id=history.owner.id, email=history.owner.email, created_at=history.owner.created_at)
 
-    print(f'audio response:\n{audio[-1:]}\n')
+        # Create a MemoryResponse instance for the current memory
+        memory_response = schemas.MemoryResponse(
+            conversation_id=history.id,  # id is the conversation_id
+            user_message=history.user_message,
+            llm_response=history.llm_response,
+            conversations_summary=history.conversations_summary,
+            owner=owner,
+            likes=likes_count
+        )
 
-    # return {"message: Be Good Doing Good By Acting Good ¡!¡": audio_responses[-1:]}
+        # Append the MemoryResponse instance to the list
+        audio_responses.append(memory_response)
+
+    print(f'audio response:\n{audio_responses[-1:]}\n')
+
     return audio_responses[-1:]
 
 
@@ -281,52 +317,75 @@ async def play_audio_by_id(audio_record_id: int, db: Session = Depends(get_db), 
 @router.get("/get-public/{id}", status_code=status.HTTP_201_CREATED, response_model=schemas.MemoryResponse)
 def get_conversation_by_id(id: int, db: Session = Depends(get_db),
                            current_user: int = Depends(oauth2.get_current_user)):
-    converse = db.query(models.Memory).filter(models.Memory.id == id).options(joinedload(models.Memory.owner)).first()
+    # Fetch the conversation by ID along with the owner data and the vote count
+    conversation = db.query(models.Memory).filter(models.Memory.id == id).first()
 
-    if not converse:
-        print(f'conversations with ID: "{id}" was not found')
+    if not conversation:
+        print(f'Conversation with ID: "{id}" was not found')
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f"conversations with ID: '{id}' was not found'")
+                            detail=f"Conversation with ID: '{id}' was not found")
 
-    # Use Pydantic's model.dict() to convert the SQLAlchemy model to a dictionary
-    converse_dict = schemas.MemoryResponse(**converse.__dict__).model_dump()
+    # Fetch the owner data
+    owner = db.query(models.User).filter(models.User.id == conversation.owner_id).first()
 
-    # Set conversation_id to the actual ID of the conversation
-    converse_dict['conversation_id'] = converse.id
-    
-    print(f'get conversation with ID:\n{converse_dict}\n')
+    # Calculate the vote count
+    likes_count = len(conversation.votes)
 
-    return converse_dict
+    # Construct the response dictionary
+    conversation_dict = schemas.MemoryResponse(
+        user_message=conversation.user_message,
+        llm_response=conversation.llm_response,
+        conversations_summary=conversation.conversations_summary,
+        conversation_id=conversation.id,
+        owner=schemas.UserOut(id=owner.id, email=owner.email, created_at=owner.created_at),
+        likes=likes_count
+    )
+
+    print(f'Conversation with ID:\n{conversation_dict}\n')
+
+    return conversation_dict
 
 
 @router.get("/get-private/{id}", status_code=status.HTTP_201_CREATED, response_model=schemas.MemoryResponse)
-def get_conversation_by_id(id: int, db: Session = Depends(get_db),
-                           current_user=Depends(oauth2.get_current_user)):
-    converse = db.query(models.Memory).filter(models.Memory.id == id).options(joinedload(models.Memory.owner)).first()
+def get_private_conversation_by_id(id: int, db: Session = Depends(get_db),
+                                   current_user=Depends(oauth2.get_current_user)):
+    
+    # Fetch the conversation from the database
+    converse = db.query(models.Memory).filter(models.Memory.id == id).first()
 
+    # Check if the conversation exists
     if not converse:
-        print(f'conversations with ID: "{id}" was not found')
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f"conversations with ID: '{id}' was not found'")
+                            detail=f"Conversation with ID: '{id}' not found")
 
+    # Check if the conversation belongs to the current user
     if converse.owner_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                            detail=f'The id: {id} doesn\'t remain to one of your previous conversations 😇 ¡!¡')
+                            detail=f"Conversation with ID: '{id}' does not belong to the current user")
 
-    # Use Pydantic's model.dict() to convert the SQLAlchemy model to a dictionary
-    converse_dict = schemas.MemoryResponse(**converse.__dict__).model_dump()
+    # Fetch the owner data
+    owner = db.query(models.User).filter(models.User.id == converse.owner_id).first()
 
-    # Set conversation_id to the actual ID of the conversation
-    converse_dict['conversation_id'] = converse.id
+    # Fetch the vote count for the conversation
+    vote_count = db.query(func.count(models.Vote.post_id)).filter(models.Vote.post_id == converse.id).scalar()
 
-    print(f'get conversation with ID:\n{converse_dict}\n')
+    # Construct the response dictionary
+    conversation_dict = schemas.MemoryResponse(
+        user_message=converse.user_message,
+        llm_response=converse.llm_response,
+        conversations_summary=converse.conversations_summary,
+        conversation_id=converse.id,
+        owner=schemas.UserOut(id=owner.id, email=owner.email, created_at=owner.created_at),
+        likes=vote_count  # Renamed likes to vote_count to match the public route response model
+    )
 
-    return converse_dict
+    return conversation_dict
 
 
 @router.put("/update/{id}", response_model=schemas.MemoryUpdate)
 def upd_conversation(id: int, updated_memory: schemas.MemoryUpdate, db: Session = Depends(get_db),
                      current_user=Depends(oauth2.get_current_user)):
+    
     # Check if the conversation exists in the database
     existing_memory_query = db.query(models.Memory).filter(models.Memory.id == id)
     existing_memory = existing_memory_query.first()
@@ -361,8 +420,8 @@ def upd_conversation(id: int, updated_memory: schemas.MemoryUpdate, db: Session 
 
 @router.delete("/delete/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def del_conversation(id: int, db: Session = Depends(get_db), current_user=Depends(oauth2.get_current_user)):
-    del_converse_query = db.query(models.Memory).filter(models.Memory.id == id)
 
+    del_converse_query = db.query(models.Memory).filter(models.Memory.id == id)
     del_converse = del_converse_query.first()
 
     if del_converse is None:

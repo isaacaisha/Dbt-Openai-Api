@@ -23,8 +23,12 @@ class UserOut(BaseModel):
 
 
 class MemoryResponse(MemoryBase):
+    user_message: str
+    llm_response: Optional[str] = None
+    conversations_summary: Optional[str] = None
     conversation_id: Optional[int] = None
     owner: Optional[UserOut] = None
+    likes: int = 0 
 
 
 class MemoryUpdate(MemoryBase):
@@ -42,7 +46,6 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str
     name: str
-    pass
 
 
 class UserLogin(BaseModel):
@@ -63,3 +66,5 @@ class Vote(BaseModel):
     post_id: int
     dir: conint(ge=0, le=1) # type: ignore
 
+    class Config:
+        from_attributes = True
