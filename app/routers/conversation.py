@@ -324,24 +324,30 @@ def get_conversation_by_id(id: int, db: Session = Depends(get_db),
         print(f'Conversation with ID: "{id}" was not found')
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"Conversation with ID: '{id}' was not found")
+    
+    # Fetch the conversation from the database
+    converse = db.query(models.Memory).filter(models.Memory.id == id).first()
+
+    # Check if the conversation exists
+    if not converse:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail=f"Conversation with ID: '{id}' not found")
 
     # Fetch the owner data
-    owner = db.query(models.User).filter(models.User.id == conversation.owner_id).first()
+    owner = db.query(models.User).filter(models.User.id == converse.owner_id).first()
 
-    # Calculate the vote count
-    likes_count = len(conversation.votes)
+    # Fetch the vote count for the conversation
+    vote_count = db.query(func.count(models.Vote.post_id)).filter(models.Vote.post_id == converse.id).scalar()
 
     # Construct the response dictionary
     conversation_dict = schemas.MemoryResponse(
-        user_message=conversation.user_message,
-        llm_response=conversation.llm_response,
-        conversations_summary=conversation.conversations_summary,
-        conversation_id=conversation.id,
+        user_message=converse.user_message,
+        llm_response=converse.llm_response,
+        conversations_summary=converse.conversations_summary,
+        conversation_id=converse.id,
         owner=schemas.UserOut(id=owner.id, email=owner.email, created_at=owner.created_at),
-        likes=likes_count
+        likes=vote_count  # Renamed likes to vote_count to match the public route response model
     )
-
-    print(f'Conversation with ID:\n{conversation_dict}\n')
 
     return conversation_dict
 
