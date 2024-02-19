@@ -1,6 +1,5 @@
-from sqlalchemy import Column, String, Integer, ForeignKey
+from sqlalchemy import Column, String, Integer, ForeignKey, TIMESTAMP
 from sqlalchemy.orm import relationship, joinedload
-from sqlalchemy.sql.sqltypes import TIMESTAMP
 from datetime import datetime
 
 from app.database import Base
@@ -17,11 +16,11 @@ class Memory(Base):
     owner_id = Column(Integer, ForeignKey('api_users.id', ondelete='CASCADE'), nullable=False)
     
     owner = relationship('User', back_populates='memories')
-    votes = relationship("Vote", back_populates="memory")
+    votes = relationship("Vote", back_populates="memory", foreign_keys="[Vote.memory_id]")
 
     def __str__(self):
         return f"Memory(id={self.id}, user_message='{self.user_message}', llm_response='{self.llm_response}')"
-
+    
 
 class User(Base):
     __tablename__ = 'api_users'
@@ -39,5 +38,5 @@ class Vote(Base):
     user_id = Column(Integer, ForeignKey("api_users.id", ondelete="CASCADE"), primary_key=True)
     post_id = Column(Integer, ForeignKey("api_memories.id", ondelete="CASCADE"), primary_key=True)
 
-    memory_id = Column(Integer, ForeignKey('memories.id'))
-    memory = relationship("Memory", back_populates="votes")
+    memory_id = Column(Integer, ForeignKey('api_memories.id'))
+    memory = relationship("Memory", back_populates="votes", foreign_keys="[Vote.memory_id]")

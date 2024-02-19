@@ -3,6 +3,7 @@ import uvicorn
 import os
 import secrets
 from fastapi import FastAPI, status, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 from . import models
 from .database import engine
@@ -15,6 +16,16 @@ _ = load_dotenv(find_dotenv())
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(debug=True)
+
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 openai.api_key = os.environ['OPENAI_API_KEY']
 # Generate a random secret key
