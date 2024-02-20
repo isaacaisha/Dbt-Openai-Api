@@ -1,33 +1,28 @@
  body {
-     <!--font-family: Arial, sans-serif;-->
-     text-align: center;
-     color: white;
-     background-image: url('../images/space.jpg');
-     background-size: cover;
-     background-position: center;
+    color: #fff;
+    background-image: url('../images/space.jpg');
+    background-size: cover;
+    background-position: center;
     padding: 1rem;
  }
 
 large-image {
-     width: 100%;
+    width: 100%;
      max-width: 600px;
  }
 
-.completed {
-     text-decoration: 0.3rem line-through green;
- }
-
-#content > div.container-fluid.mb-5 > div > div {
+#content > div.container-fluid > div > div {
     padding: 0.3rem;
 }
 
-h1 {
-    background-color: #fff;
+#content > div.container-fluid > div > div > h1, #content > div > div.container-fluid > div > div > h1{
+    background-color: #000;
     border: 0.1rem solid #AEFAFC;
     border-radius: 0.3rem;
     color: #9126E8;
     font-family: 'Merriweather', sans-serif;
     font-display: swap;
+    font-size: 1.9rem;
     font-weight: 900;
     margin: 0;
     text-align: center;
@@ -54,32 +49,273 @@ h1 {
     }
 }
 
-h3 {
+#content > div:nth-child(4) > nav > ul > li > a {
+    color: #20c997;
+    text-align: center;
+}
+
+#content > nav {
+    margin-bottom: 0rem;
+}
+
+/* SìįSí Dbt 🚀 navbar-brand */
+#content > nav > a {
+    color: #9ED2C6;
+}
+
+/* Menu navbar-toggler-icon 🚀  */
+#content > nav > button {
+    color: #9ED2C6;
+    border: 0.1rem solid  #9ED2C6;
+}
+
+.navbar-toggler-icon {
+    border: 0.09rem solid #9ED2C6;
+    border-top-left-radius: 55%;
+    border-bottom-right-radius: 55%;
+}
+
+.navbar-toggler-icon:hover {
+    border-radius: 0;
+    border-top-right-radius: 55%;
+    border-bottom-left-radius: 55%;
+    font-size: 1.5rem;
+}
+
+#navbarSupportedContent > ul > li > a {
+    color: #9ED2C6;
+    font-family: 'Merriweather', sans-serif;
+    text-align: center;
+}
+
+#navbarSupportedContent > ul > li > a:hover {
+    color: #47FFAC;
+}
+
+.log-register-h3 {
+    background-image: linear-gradient(to bottom, #00FFAB, #8e2cb8);
+    border: 0.19rem solid #9ED2C6;
+    border-top-left-radius: 37%;
+    border-bottom-right-radius: 37%;
+    color: #AEFAFC;
+    margin: 0.5rem;
+    padding: 0.9rem;
+}
+
+.navbar.nav-home {
+    margin-bottom: 0;
+}
+
+/* register-home & log-in-home index.html */
+#navbarSupportedContent > ul > li > a.register-home,
+#navbarSupportedContent > ul > li > a.log-in-home {
+    background-color: #0d1515;
+    border: 0.1rem solid #17a2b8;
+    border-radius: 19rem;
+    color: gold;
+    font-size: 2.1rem;
+    padding: 1.3rem;
+    transform: rotate(7deg);
+
+    /* Set a fixed width */
+    width: 145px; /* Adjust the width based on your design */
+    box-sizing: border-box; /* Include padding and border in the element's total width */
+}
+
+#navbarSupportedContent > ul > li > a.log-in-home {
+    transform: rotate(-7deg);
+}
+
+.log-out {
+    color: #9A30F3;
+    font-family: 'Merriweather', sans-serif;
+    font-size: 1rem;
+}
+
+.artificial-intelligence {
+    color: #9A30F3;
+    font-family: 'Cardo';
+    font-size: 2.71rem;
+}
+
+/* register title */
+.p-1.rounded-3.jumbotron {
+    margin: 0;
+}
+
+/* register form field: Name */
+body > div.content > div.container > div > div > div > div.mb-3 > form > div:nth-child(5) {
+    margin-bottom: 1.9rem !important;
+}
+
+/* Style the Popup Container */
+.popup-container {
+    /* display: none; */
+    /* Initially hide the container */
+    position: fixed;
+    top: 67%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-image: url('../images/space.jpg');
+    padding: 19px;
+    border: 1px solid #ccc;
+    border-top-right-radius: 19%;
+    border-bottom-left-radius: 19%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    /* Ensure it's on top of other elements */
+    z-index: 9999;
+    width: 91%; /* Adjust width as needed */
+    max-width: 559px; /* Set maximum width to prevent it from becoming too wide */
+}
+
+/* Style the Show Button */
+#showPopupButton {
+    background-color: #0d1515;
+    border: 0.1rem solid #17a2b8;
+    border-radius: 19%;
+    color: #17a2b8;
+    padding: 5px 10px;
+}
+
+/* Style the Close Button */
+#closePopupButton {
+    background-color: #0d1515;
+    border: 0.1rem solid #AEFAFC;
+    border-radius: 100%;
+    padding: 5px 10px;
+}
+
+.green {
+    color: darkgreen;
+}
+
+.SìįSí, .gold {
+    color: gold;
+}
+
+.crimson {
+    color: crimson;
+}
+
+.white {
+    color: #fff;
+}
+
+.mediumslateblue {
+    color: mediumslateblue;
+}
+
+.convers-id {
+    color: #cdfcf5;;
+}
+
+.llm-response {
+    color: #70f8fd;
+}
+
+.summary {
+    color: #AEFAFC;
+}
+
+.created {
+    color: #d0ebec;
+}
+
+textarea#userInput {
+    color: #72e9fc !important;
+}
+
+.history-title {
+    color: #17a2b8 !important;
+    margin-top: 0;
+}
+
+.underline {
+    color: gold;
+    text-decoration: underline;
+}
+
+.conversations-details {
+    color: #AEFAFC;
     font-family: 'Lora', 'Times New Roman', serif;
 }
 
-.crown {
+.conversations {
+    color: #AEFAFC;
+    font-family: 'Lora', 'Times New Roman', serif;
+    margin-top: 0;
+    text-align: center;
+}
+
+.align-left {
+    text-align: left;
+}
+
+/* Click to Go Back to Select Conversation */
+#content>div>div>a, #content>div.conversations.container>div>a {
+    text-decoration: underline;
+}
+
+/* Click to Go Back to Select Conversation */
+#content>div>div>a:hover, #content>div.conversations.container>div>a:hover {
+    color: #6ABFA6;
+}
+
+label {
+    color: #9A30F3;
+    font-family: 'Lora', 'Times New Roman', serif;
+}
+
+/* textarea 🚀 */
+label, input, #userInput, #generatedText, textarea, #historiesContainerJson > pre {
+    background-color: rgba(0, 0, 0, 0.175) !important;
+}
+
+/* textarea 🚀 */
+input, #userInput, #historiesContainerJson > pre {
+    color: #9ED2C6 !important;
+}
+
+.crown, .micro {
     border: 0.1rem solid #AEFAFC;
     border-radius: 2.3rem;
     padding: 0.3rem;
     width: 2.7rem;
 }
 
-.language-btn, .btn-story {
+.micro {
+    border: 0.1rem solid #000;
+}
+
+.loading {
+    border: 0.1rem solid #AEFAFC;
+    border-radius: 2.3rem;
+    padding: 0.3rem;
+    width: 3.7rem;
+}
+
+#scrollDownButton {
+    border: 0.1rem solid;
+    border-radius: 2.3rem;
+    padding: 0.3rem;
+    width: 2.7rem;
+}
+
+button.language-btn {
     background-color: #9A30F3;
     border: 0.1rem solid #AEFAFC;
     border-radius: 0.3rem;
     color: #fff;
     font-family: 'Merriweather', sans-serif;
-    font-size: 1.3rem;
+    font-size: 1rem;
     text-decoration: None;
 }
 
-.language-btn:hover {
-    color: #000;
+button.language-btn:hover {
+    color: yellow;
 }
 
-#langAr {
+#langAr, .btn-story:hover {
     background-image: linear-gradient(to bottom, #8e2cb8, #00FFAB);
 }
 
@@ -97,14 +333,13 @@ h3 {
     background-image: linear-gradient(to bottom, #8e2cb8, #00FFAB);
 }
 
-#langFr, .btn-story {
+#langFr {
     background-image: linear-gradient(to bottom, #00FFAB, #8e2cb8);
 }
 
 #userInput, #generatedText, #final-result-content.form-control.result, .textarea-memory {
     border: 0.1rem solid #1295FA;
     border-radius: 0.9rem;
-    color:#0041F6;
     font-family: 'Montserrat', sans-serif;
     font-display: swap;
     height: 91px;
@@ -113,21 +348,16 @@ h3 {
     width: 100%;
 }
 
+/* crsf_token */
+#content>div.container.text-center>div.row>div>form>div>label{
+    display: none;
+}
+
 .textarea-memory {
-    color: red;
+    color: #4bedc7;;
     height: 199px;
     line-height: 1.9rem;
     padding: 0.9rem;
-}
-
-#final-result-speech-content {
-    border: 0.1rem solid #1295FA;
-    border-radius: 0.9rem;
-    color:purple;
-    font-family: 'Merriweather', sans-serif;
-    font-display: swap;
-    height: 91px;
-    min-height: 55px;
 }
 
 #userInput::placeholder {
@@ -140,127 +370,95 @@ h3 {
 }
 
 textarea#generatedText {
-    color: #096752;
+    color: #AEFAFC;
     font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
     margin-bottom: 1rem;
 }
 
-.generate-text {
-    color: #fff;
-    background-color: #1295FA;
-    border: 0.1rem solid #AEFAFC;
-}
-
-.generate-text:hover {
-    background-color: #1295FA;
-    border: 0.1rem solid #73DD7E;
-    color: #73DD7E;
-}
-
-# --------------------------------------------------- 🔥👌🏿💚😇❤️🔥 ---------------------------------------------------#
 .label_ {
     background-color: #fff;
     border-radius: 19%;
-    color: #096752;
-    font-size: 0.7rem;
+    color: #AEFAFC;
+    font-size: 1rem;
     padding: 0.1rem;
 }
 
-#start-button, #final_result {
+#start-button {
     color: #fff;
     background-color: #1295FA;
     border: 0.1rem solid #AEFAFC;
     font-family: 'Lora', 'Times New Roman', serif;
 }
 
-#start-button:hover, #final_result:hover {
+#start-button:hover {
     color: #73DD7E;
 }
 
-#speechRecognitionButton, #final_result_speech {
+#speechRecognitionButton {
     color: #fff;
     background-color: #30ABB7;
     border: 0.1rem solid #AEFAFC;
     font-family: 'Cardo';
 }
 
-#speechRecognitionButton:hover, #final_result_speech:hover {
+#speechRecognitionButton:hover {
     background-color: 9A30F3;
     border: 0.1rem solid #73DD7E;
     color: #9A30F3;
 }
 
-#generateButton, .btn-story:hover {
-    color: #37EC37;
-}
-
-#generateButton:hover {
-    color: #fff;
-}
-
-.generate-text {
-    color: #fff;
-    background-color: #9A30F3;
+#generateButton, #playbackButton {
+    background-color: #AEFAFC;;
     border: 0.1rem solid #AEFAFC;
-    margin-top: 1rem;
-    font-family: 'Merriweather', sans-serif;
+    color: #8e2cb8;
 }
 
-.generate-text:hover {
-    background-color: #9A30F3;
-    color: #73DD7E;
+#generateButton:hover, #playbackButton:hover {
+    color: #30ABB7;
 }
 
-#final-result-content {
+#final-result-content, #resultMemo > h3 {
     color: #1295FA;
 }
 
-textarea#writing_text.form-control, #final-result-content {
+textarea#writing_text.form-control {
     min-height: 55px;
     font-family: 'Merriweather', sans-serif;
     height: 55px;
-}
-
-#final-result-content {
-    margin: 0 0 1rem;
-    background-color: #fff;
-    padding: 0.5rem;
 }
 
 #showResultButton {
     font-size: 1.09rem;
 }
 
-.info-btn > a {
+/* btn back-home */
+.back-home > a {
+    border: 0.1rem solid #9A70F3;
+    border-radius: 19%;
     color: #fff;
-    font-family: 'Merriweather', sans-serif;
-    text-decoration: None;
+    font-size: .9rem;
+    padding: .7rem;
 }
 
-.info-btn > a:hover {
-    color: #000;
+.back-home > a:hover {
+    color: #fff;
 }
 
-.conversation-details {
-    background-image: linear-gradient(to bottom, #8e2cb8, #00FFAB);
-    border: 0.1rem solid #AEFAFC;
-    border-radius: 0.3rem;
-    font-size: 0.7rem;
-}
-
-.fastapi-docs {
+.btn.fastapi-docs {
     background-image: linear-gradient(to bottom, #00FFAB, #8e2cb8);
     border: 0.1rem solid #AEFAFC;
     border-radius: 0.3rem;
-    font-size: 0.7rem;
+    font-size: 1rem;
+    margin: 0.5rem;
     transform: rotate(37deg);
 }
 
-.fastapi-redoc {
+.btn.fastapi-redoc {
     background-image: linear-gradient(to bottom, #00FFAB, #8e2cb8);
     border: 0.1rem solid #AEFAFC;
     border-radius: 0.3rem;
-    font-size: 0.7rem;
+    font-size: 1rem;
+    margin: 0.5rem;
     transform: rotate(-37deg);
 }
 
@@ -274,11 +472,10 @@ textarea#writing_text.form-control, #final-result-content {
     white-space: pre-line;
 }
 
-hr {
+hr.mb-3, body hr {
     border: 0.1rem solid;
     border-radius: 0.5rem;
     margin: 0 3rem;
-    #margin-top: 1.9rem;
 }
 
 #footer {
@@ -304,12 +501,26 @@ hr {
 }
 
 .copyright {
-    background-color: #AEFAFC;
+    background-color: #000;
     border: 0.1rem solid #1295FA;
     border-radius: 0.5rem;
     color: #9A30F3;
     font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-size: 0.73rem;
+    font-size: 1rem;
     padding: 0.3rem;
 }
-# --------------------------------------------------- 🔥👌🏿💚😇❤️🔥 ---------------------------------------------------#
+
+#home-tab2 > a, #profile-tab2 {
+    font-size: 2.7rem;
+}
+
+/* navbare like icon btn */
+#navbarSupportedContent>ul>li:nth-child(5)>a>i {
+    color: pink;
+}
+
+/* like icon btn */
+.like-button,
+.text-center {
+    color: #70f8fd;
+}

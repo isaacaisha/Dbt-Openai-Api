@@ -1,0 +1,72 @@
+{% extends 'header.html' %}
+
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block title %} Welcome to {% endblock %}
+
+{% block head %}
+    {{ super() }}
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/images/favicon.ico') }}">
+    {% include 'bootstrap/base.html' %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+{% endblock %}
+
+{% block content1 %}
+<div class="container-fluid">
+    <div class="p-1 rounded-3 jumbotron">
+        <div class="py-1">
+            <h1 class="">Delete a Conversation ¡!¡</h1>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+{% autoescape true %}
+
+<div class="container text-center">
+
+    <hr class="crimson mb-3">
+    <h3 class="conversations crimson mb-3">Delete a Conversation</h3>
+
+    <hr class="crimson mb-5">
+    <hr class="gold mb-3">
+
+    <div class="row">
+
+        <div class="col-lg-8 col-md-10 mx-auto content mb-3">
+
+            <form method="POST" action="{{ url_for('conversation_function.delete_conversation') }}">
+
+                {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                        {% for message in messages %}
+                            <h5 class="alert-warning">{{ message }}</h5>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                {{ wtf.form_field(delete_conversation_form.csrf_token) }}
+
+                <span class="align-left">{{ wtf.form_field(delete_conversation_form.conversation_id, autofocus=true) }}</span>
+                {{ wtf.form_field(delete_conversation_form.submit, class="submit btn btn-danger") }}
+            </form>
+
+        </div>
+    </div>
+
+    <hr class="gold mb-5">
+    <hr class="green mb-3">
+
+    <button type="button" class="btn btn-outline back-home mb-3">
+        <a href="{{ url_for('conversation_interface.conversation_interface') }}" class="">Back Home -¡!¡-</a>
+    </button>
+
+    <hr class="green mb-5">
+
+</div>
+
+{% endautoescape %}
+{% endblock %}
+
+{% block footer_ %} {% endblock %}

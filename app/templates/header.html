@@ -1,111 +1,261 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/html">
+<html lang="en">
 
-    <head>
-        <meta charset="utf-8">
-        <meta name="geo.place-name" content="Spain">
-        <meta property="og:type" content="dbt-openai DBT">
-        <meta name="description" content="This is dbt-openai website.">
-        <meta property="og:title" content="dbt-openai website">
-        <meta content="Programmer" property="og:description">
-        <meta property="og:image" content="https://dbt-openai-a853e0d6a59a.herokuapp.com/static/assets/images/logo3.jpg">
-        <meta property="og:url" content="https://dbt-openai-a853e0d6a59a.herokuapp.com/">
-        <meta property="og:description" content="dbt-openai Website - Programmer & Developer, Frontend & Backend">
-        <meta name="twitter:card" content="summary_large_image">
-        <meta name="twitter:title" content="Programmer & Developer, Frontend & Backend - dbt-openai Website">
-        <meta name="twitter:description" content="Programmer & Developer - dbt-openai Website">
-        <meta name="twitter:image" content="https://dbt-openai-a853e0d6a59a.herokuapp.com/static/assets/images/logo3.jpg">
-        <meta name="keywords" content="dbt-openai Website - programmer, developer, frontend, backend, python, javascript">
-        <meta name="author" content="Developer">
-        <!--<meta name="google-site-verification" content="YOUR_GOOGLE_SEARCH_CONSOLE_VERIFICATION_CODE" />-->
-        <meta name="robots" content="index, follow" />
-        <meta name="googlebot" content="index, follow">
+<head>
+  {% block head %}
+  <meta charset="utf-8">
+  <meta name="geo.place-name" content="Spain">
+  <meta property="og:type" content="·SìįSí·Dbt·">
+  <meta name="description" content="This is ·SìįSí·Dbt· website.">
+  <meta property="og:title" content="·SìįSí·Dbt· website">
+  <meta content="Programmer" property="og:description">
+  <meta property="og:image" content="https://dbt-openai-a853e0d6a59a.herokuapp.com/static/assets/images/logo3.jpg">
+  <meta property="og:url" content="https://dbt-openai-a853e0d6a59a.herokuapp.com/">
+  <meta property="og:description" content="·SìįSí·Dbt· Website - Programmer & Developer, Frontend & Backend">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Programmer & Developer, Frontend & Backend - dbt-openai Website">
+  <meta name="twitter:description" content="Programmer & Developer - ·SìįSí·Dbt· Website">
+  <meta name="twitter:image" content="https://dbt-openai-a853e0d6a59a.herokuapp.com/static/assets/images/logo3.jpg">
+  <meta name="keywords" content="·SìįSí·Dbt· Website - programmer, developer, frontend, backend, python, javascript">
+  <meta name="author" content="Developer">
+  <!--<meta name="google-site-verification" content="YOUR_GOOGLE_SEARCH_CONSOLE_VERIFICATION_CODE" />-->
+  <meta name="robots" content="index, follow" />
+  <meta name="googlebot" content="index, follow">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>{% block title %}{% endblock %} 👌🏿DBT OpenAI App💪🏿</title>
 
-        {% block head %}
-            <title>{% block title %}{% endblock %} 👌🏿DBT OpenAI App💪🏿</title>
+  <!-- Custom fonts for this template -->
+  <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+  <link
+    href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800'
+    rel='stylesheet' type='text/css'>
+  <link href="https://fonts.googleapis.com/css2?family=Merriweather&family=Montserrat&family=Sacramento&display=swap"
+    rel="stylesheet">
+  
+  <!-- Bootstrap CSS from CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+  
+  <!-- Your custom CSS files -->
+  <link href="{{ bootstrap_css_url }}" rel="stylesheet">
+  <link href="{{ fontawesome_css_url }}" rel="stylesheet">
+  <link href="{{ style_css_url }}" rel="stylesheet">  
 
-            <!-- Bootstrap core CSS -->
-            <link href="static/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
-            <!-- Custom fonts for this template -->
-            <link href="static/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
-            <link href='https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
-            <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
-            <link href="https://fonts.googleapis.com/css2?family=Merriweather&family=Montserrat&family=Sacramento&display=swap" rel="stylesheet">
+  {% block favicon %} {% endblock %}
 
-            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
-                  integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
-            {% block favicon %} {% endblock %}
-            <link rel="stylesheet" href="static/assets/css/style.css">
+  {% endblock %}
+</head>
 
-        {% endblock %}
-    </head>
+<body>
+  <div id="content">
+    <!-- Content-Title -->
+    {% block content1 %}{% endblock %}
 
-    <body>
-        <div id="content">
-            <!-- Content -->
-            {% block content %}{% endblock %}
+    <!-- Navbar -->
+    {% block navbar %}
+    <nav class="navbar navbar-expand-md navbar-dark">
+
+      <a class="navbar-brand col" href="https://openai-dbt-api-18753ef200f1.herokuapp.com/docs">SìįSí Dbt</a>
+
+      <button class="navbar-toggler mx-auto" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        Menu <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav ml-auto">
+          {% if not current_user.is_authenticated: %}
+          <li class="nav-item">
+            <a class="nav-link log-out" aria-current="page" href="{{ url_for('auth.logout') }}">
+              <span style="font-size:1.9rem;">∞<br>∞Reload∞<br>or<br></span>
+              <span class="gold" style="font-size:1.45rem;">Log Out</span><br>
+            </a>
+          </li>
+          {% else %}
+          <li class="nav-item">
+            <a class="nav-link active"
+              href="{{ url_for('conversation_interface.conversation_interface') }}">Conversation Interface</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('llm_conversation.get_all_conversations') }}">Conversations</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('llm_conversation.show_story') }}">Conversation History I</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('llm_conversation.convers_head_tail') }}">Conversation History II</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('llm_conversation.liked_conversations') }}">Conversation -¡!¡-<i
+                class="fa fa-heart"></i>-¡!¡-</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('conversation_function.select_conversation') }}">Conversation ID</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('conversation_function.delete_conversation') }}">Delete
+              Conversation</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link log-out" href="{{ url_for('auth.logout') }}">Log Out</a>
+          </li>
+          {% endif %}
+        </ul>
+      </div>
+
+    </nav>
+    {% endblock %}
+
+    <!-- Content -->
+    {% block content %}{% endblock %}
+
+    <div class="container text-center mb-1">
+      <button id="fastapi-docs" type="button" class="btn fastapi-docs">
+        <a href="https://openai-dbt-api-18753ef200f1.herokuapp.com/docs" target="_blank" class="white">SìįSíFastAPI</a>
+      </button>
+
+      <img src="https://rastas-dreadlocks.3marches.com/images/crown.webp" class="crown">
+
+      <button id="fastapi-redoc" type="button" class="btn fastapi-redoc">
+        <a href="https://blog-fast-api-dfbb3cc5fdaf.herokuapp.com/docs" target="_blank" class="white">BlogFastAPI</a>
+      </button>
+    </div>
+
+  </div>
+  <div id="footer">
+    <!-- Footer -->
+    {% block footer %} {% endblock %}
+    <footer>
+      <div class="container container-margin">
+        <div class="row">
+          <div class="col-lg-8 col-md-10 mx-auto">
+            <ul class="list-inline text-center">
+              <li class="list-inline-item">
+                <a href="https://rastas-dreadlocks.3marches.com" target="_blank">
+                  <span class="fa-stack fa-lg">
+                    <i class="fas fa-circle fa-stack-2x"></i>
+                    <i class="fab fa-twitter fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://rastas-dreads-blog.herokuapp.com" target="_blank">
+                  <span class="fa-stack fa-lg">
+                    <i class="fas fa-circle fa-stack-2x"></i>
+                    <i class="fab fa-facebook-f fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+              <li class="list-inline-item">
+                <a href="https://github.com/isaacaisha" target="_blank">
+                  <span class="fa-stack fa-lg">
+                    <i class="fas fa-circle fa-stack-2x"></i>
+                    <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                  </span>
+                </a>
+              </li>
+            </ul>
+
+            <div class="mb-3">
+              <span class="copyright">
+                © DBT Copyright {{ date }}
+              </span>
+            </div>
+          </div>
         </div>
-        <div id="footer">
-            <!-- Footer -->
-            {% block footer %} {% endblock %}
-            <footer>
-              <div class="container container-margin">
-                <div class="row">
-                  <div class="col-lg-8 col-md-10 mx-auto">
-                    <ul class="list-inline text-center">
-                      <li class="list-inline-item">
-                        <a href="https://rastas-dreadlocks.3marches.com" target="_blank">
-                          <span class="fa-stack fa-lg">
-                            <i class="fas fa-circle fa-stack-2x"></i>
-                            <i class="fab fa-twitter fa-stack-1x fa-inverse"></i>
-                          </span>
-                        </a>
-                      </li>
-                      <li class="list-inline-item">
-                        <a href="https://rastas-dreads-blog.herokuapp.com" target="_blank">
-                          <span class="fa-stack fa-lg">
-                            <i class="fas fa-circle fa-stack-2x"></i>
-                            <i class="fab fa-facebook-f fa-stack-1x fa-inverse"></i>
-                          </span>
-                        </a>
-                      </li>
-                      <li class="list-inline-item">
-                        <a  href="https://github.com/isaacaisha" target="_blank">
-                          <span class="fa-stack fa-lg">
-                            <i class="fas fa-circle fa-stack-2x"></i>
-                            <i class="fab fa-github fa-stack-1x fa-inverse"></i>
-                          </span>
-                        </a>
-                      </li>
-                    </ul>
+      </div>
+    </footer>
 
-                    <div class="container">
-                      <span class="copyright">
-                      © DBT Copyright {{ year }} {{ date }}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </footer>
+    <script src="/static/vendor/jquery/jquery.min.js"></script>
+    <script src="/static/js/dbt-openai.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
+      crossorigin="anonymous"></script>
+    <script src="/static/js/active-state.js"></script>
 
-            <!-- Bootstrap core JavaScript -->
-            <script src="static/vendor/jquery/jquery.min.js"></script>
-            <script src="static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-            <!-- Custom scripts for this template -->
-            <script src="static/js/dbt-openai.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
-
-            <!-- Include JavaScript file -->
-            <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-            <script src="static/js/main.js"></script>
-            <script src="static/js/speech.js"></script>
-            <script src="static/js/recording-speech.js"></script>
-        </div>
-    </body>
+  </div>
+</body>
 
 </html>
+
+
+
+
+<!--
+  from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from jinja2 import Environment, FileSystemLoader
+import openai
+import uvicorn
+import os
+import secrets
+from fastapi import FastAPI, Request, status, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse, RedirectResponse
+from . import models
+from .database import engine
+from .routers import conversation, user, auth, vote
+from dotenv import load_dotenv, find_dotenv
+
+
+_ = load_dotenv(find_dotenv())
+
+models.Base.metadata.create_all(bind=engine)
+
+app = FastAPI(debug=True)
+
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+openai.api_key = os.environ['OPENAI_API_KEY']
+# Generate a random secret key
+secret_key = secrets.token_hex(199)
+# Set it as the Flask application's secret key
+app.secret_key = secret_key
+
+# Heroku provides the DATABASE_URL environment variable
+DATABASE_URL = os.environ['DATABASE_URL']
+
+# Mount a directory containing static files (e.g., CSS, JavaScript)
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
+
+# Create an instance of Jinja2Templates for rendering HTML templates
+templates = Jinja2Templates(directory="app/templates")
+
+
+# Define the URLs for static files
+bootstrap_css_url = "/static/vendor/bootstrap/css/bootstrap.min.css"
+fontawesome_css_url = "/static/vendor/fontawesome-free/css/all.min.css"
+style_css_url = "/static/assets/css/style.css"
+favicon_url = "/static/assets/images/favicon5.ico"
+
+@app.get("/", response_class=HTMLResponse)
+async def read_root(request: Request):
+    # Render the template and pass static file URLs to the template context
+    return templates.TemplateResponse("index.html", {
+        "request": request,
+        "bootstrap_css_url": bootstrap_css_url,
+        "fontawesome_css_url": fontawesome_css_url,
+        "style_css_url": style_css_url,
+        "favicon_url": favicon_url
+    })
+
+
+app.include_router(conversation.router)
+app.include_router(user.router)
+app.include_router(auth.router)
+app.include_router(vote.router)
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))
+
+-->
