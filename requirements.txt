@@ -125,6 +125,8 @@ psycopg2-binary==2.9.9
 
 >>>>>>> 970fa15 (improve the content result for better user experiance)
 pydantic==2.4.2
+pydantic-extra-types==2.1.0
+pydantic-settings==2.0.3
 pydantic_core==2.10.1
 Pygments==2.16.1
 python-dateutil==2.8.2
