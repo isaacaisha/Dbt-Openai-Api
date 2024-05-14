@@ -42,6 +42,11 @@ app.include_router(auth.router)
 app.include_router(vote.router)
 
 
+# @app.get("/", status_code=status.HTTP_201_CREATED)
+# async def root():
+#     return {"Be Good Doing Good By Acting Good ¡!¡": "Siisi Chacal 🔥👌🏿😇💪🏿🔥"}
+
+
 @app.get("/", status_code=status.HTTP_201_CREATED)
 async def root():
     return {"Be Good Doing Good By Acting Good": "Siisi-¡!¡-Chacal 🔥👌🏿😇💪🏿🔥"}
