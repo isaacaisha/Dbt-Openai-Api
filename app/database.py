@@ -10,7 +10,7 @@ import time
 load_dotenv()
 
 
-#from .config import settings
+from .config import settings
 
 
 # # Construct the SQLALCHEMY_DATABASE_URL using the settings
@@ -21,6 +21,13 @@ load_dotenv()
 SQLALCHEMY_DATABASE_URL = (
     f"postgresql://{settings.user}:{settings.password}@{settings.host}:{settings.port}/{settings.database}"
 )
+
+
+#SQLALCHEMY_DATABASE_URL = (
+#    f"postgresql://{os.environ['USER']}:{os.environ['PASSWORD']}@"
+#    f"{os.environ['HOST']}:{os.environ['PORT']}/{os.environ['DATABASE']}"
+#)
+
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
