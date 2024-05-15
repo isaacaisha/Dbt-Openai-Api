@@ -10,7 +10,7 @@ import time
 load_dotenv()
 
 
-from .config import settings
+# from .config import settings
 
 
 # # Construct the SQLALCHEMY_DATABASE_URL using the settings
@@ -18,8 +18,10 @@ from .config import settings
 #     f"postgresql://{settings.user}:{settings.password}@{settings.host}:{settings.port}/{settings.database}"
 # )
 
+
 SQLALCHEMY_DATABASE_URL = (
-    f"postgresql://{settings.user}:{settings.password}@{settings.host}:{settings.port}/{settings.database}"
+    f"postgresql://{os.environ['user']}:{os.environ['password']}@"
+    f"{os.environ['host']}:{os.environ['port']}/{os.environ['database']}"
 )
 
 
