@@ -13,7 +13,7 @@ from dotenv import load_dotenv, find_dotenv
 
 _ = load_dotenv(find_dotenv())
 
-models.Base.metadata.create_all(bind=engine)
+# models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(debug=True)
 
@@ -43,21 +43,21 @@ app.include_router(auth.router)
 app.include_router(vote.router)
 
 
-# @app.get("/", status_code=status.HTTP_201_CREATED)
-# async def root():
-#     return {"Be Good Doing Good By Acting Good ¡!¡": "Siisi Chacal 🔥👌🏿😇💪🏿🔥"}
-
-
 @app.get("/", status_code=status.HTTP_201_CREATED)
 async def root():
-    try:
-        # Assuming you want to redirect to the URL fetched from the environment variable
-        # redirect_url = os.environ['REDIRECT_URL_DBT_OPENAI']
-        redirect_url = os.environ['REDIRECT_URL_FASTAPI']
-        return RedirectResponse(url=redirect_url, status_code=status.HTTP_302_FOUND)
-    except KeyError:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                            detail="Redirect URL not found in environment variables")
+    return {"Be Good, Doing Good, By Acting Good": "Siisi-¡!¡-Chacal 🔥👌🏿😇💪🏿🔥"}
+
+
+# @app.get("/", status_code=status.HTTP_201_CREATED)
+# async def root():
+#     try:
+#         # Assuming you want to redirect to the URL fetched from the environment variable
+#         # redirect_url = os.environ['REDIRECT_URL_DBT_OPENAI']
+#         redirect_url = os.environ['REDIRECT_URL_FASTAPI']
+#         return RedirectResponse(url=redirect_url, status_code=status.HTTP_302_FOUND)
+#     except KeyError:
+#         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#                             detail="Redirect URL not found in environment variables")
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))
