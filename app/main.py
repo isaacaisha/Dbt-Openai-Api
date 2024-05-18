@@ -27,7 +27,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-openai_api_key = os.environ["OPENAI_API_KEY"]
+openai_api_key = os.getenv('OPENAI_API_KEY')
 # Generate a random secret key
 secret_key = secrets.token_hex(199)
 # Set it as the Flask application's secret key
