@@ -22,7 +22,7 @@ router = APIRouter(
 )
 
 # Initialize an empty conversation chain
-llm = ChatOpenAI(temperature=0.0, model="gpt-3.5-turbo-0301")  # Set your desired LLM model here
+llm = ChatOpenAI(temperature=0.0, model="gpt-4-turbo")  # Set your desired LLM model here
 memory = ConversationBufferMemory()
 conversation = ConversationChain(llm=llm, memory=memory, verbose=False)
 memory_summary = ConversationSummaryBufferMemory(llm=llm, max_token_limit=19)
