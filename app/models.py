@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, Integer, ForeignKey, TIMESTAMP
 from sqlalchemy.orm import relationship, joinedload
-from datetime import datetime
+from datetime import datetime, timezone
 
 from app.database import Base
 
@@ -11,7 +11,7 @@ class Memory(Base):
     user_message = Column(String, nullable=False)
     llm_response = Column(String, nullable=False)
     conversations_summary = Column(String, nullable=False)
-    created_at = Column(TIMESTAMP(timezone=True), nullable=False, default=datetime.utcnow)
+    created_at = Column(TIMESTAMP(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
 
     owner_id = Column(Integer, ForeignKey('api_users.id', ondelete='CASCADE'), nullable=False)
     
@@ -28,7 +28,7 @@ class User(Base):
     email = Column(String, nullable=False, unique=True)
     password = Column(String, nullable=False)
     name = Column(String, nullable=False)
-    created_at = Column(TIMESTAMP(timezone=True), nullable=False, default=datetime.utcnow)
+    created_at = Column(TIMESTAMP(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc))
 
     memories = relationship('Memory', back_populates='owner')
 

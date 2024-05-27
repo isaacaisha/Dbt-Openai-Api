@@ -11,10 +11,12 @@ from sqlalchemy.orm import Session
 from ..models import Memory, joinedload
 from .. import models, schemas, oauth2
 from ..database import get_db
+
 from langchain_openai import ChatOpenAI 
 # from langchain.chat_models import ChatOpenAI
 from langchain.chains import ConversationChain
 from langchain.memory import ConversationBufferMemory, ConversationSummaryBufferMemory
+
 
 router = APIRouter(
     prefix="/conversation",
@@ -151,50 +153,39 @@ def get_conversation_summary(db: Session = Depends(get_db), current_user=Depends
     return {"Conversation Summary Head": head_summaries, "Conversation Summary Tail": tail_summaries}
 
 
-@router.post("/start", status_code=status.HTTP_201_CREATED, response_model=schemas.MemoryCreate)
+@router.post("/start", status_code=status.HTTP_201_CREATED, response_model=schemas.MemoryResponse)
 def start_conversation(memory_: schemas.MemoryCreate, db: Session = Depends(get_db),
                        current_user=Depends(oauth2.get_current_user)):
     try:
-        # Use SQLAlchemy ORM to insert a new record
+        # Create a new memory record
         new_memo = Memory(user_message=memory_.user_message, llm_response=memory_.llm_response,
-                          conversations_summary=memory_.conversations_summary)
+                          conversations_summary=memory_.conversations_summary, owner_id=current_user.id)
 
-        # Set the owner_id to the ID of the current user
-        new_memo.owner_id = current_user.id
-
-        # Get LLM response using the user's message
+        # Generate the LLM response
         llm_response = generate_llm_response(memory_.user_message)
-
-        # Update the new_memo with the LLM response
         new_memo.llm_response = llm_response
 
         # Save the conversation context
         memory_summary.save_context({"input": memory_.user_message}, {"output": llm_response})
-
-        # Load the conversation context
         conversations_summary = memory_summary.load_memory_variables({})
+        new_memo.conversations_summary = json.dumps(conversations_summary)
 
-        # Convert the dictionary to a JSON-formatted string
-        conversations_summary_json = json.dumps(conversations_summary)
-
-        # Set the conversation summary in the new_memo
-        new_memo.conversations_summary = conversations_summary_json
-
+        # Print debug information
         print(f'omr.user_message:\n{memory_.user_message}\n')
         print(f'llm_response:\n{llm_response}\n')
-        print(f'conversations_summary:\n{conversations_summary_json}\n')
-
+        print(f'conversations_summary:\n{json.dumps(conversations_summary)}\n')
         print(f'current_user.id: {current_user.id}\n')
         print(f'current_user.email: {current_user.email}\n')
 
+        # Add and commit the new memory record
         db.add(new_memo)
         db.commit()
         db.refresh(new_memo)
 
+        # Return the new memory record with the id field included
         return new_memo
 
     except Exception as e:
-        # Log the exception or print it for debugging
         print(f"An error occurred: {e}")
         raise HTTPException(status_code=500, detail="Internal Server Error")
 

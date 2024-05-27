@@ -1,4 +1,4 @@
-from pydantic import BaseModel, EmailStr, conint
+from pydantic import BaseModel, EmailStr, Field, ConfigDict
 from typing import Optional
 from datetime import datetime
 
@@ -14,13 +14,12 @@ class MemoryCreate(MemoryBase):
 
 
 class UserOut(BaseModel):
+    model_config = ConfigDict(extra='allow')
+
     id: int
     email: EmailStr
     created_at: Optional[datetime] = None
-
-    class Config:
-        from_attributes = True
-
+        
 
 class MemoryResponse(MemoryBase):
     user_message: str
@@ -36,11 +35,10 @@ class MemoryUpdate(MemoryBase):
 
 
 class TextAreaForm(BaseModel):
+    model_config = ConfigDict(extra='allow')
+
     writing_text: str
-
-    class Config:
-        from_attributes = True
-
+        
 
 class UserCreate(BaseModel):
     email: EmailStr
@@ -63,9 +61,7 @@ class TokenData(BaseModel):
 
 
 class Vote(BaseModel):
-    post_id: int
-    dir: conint(ge=0, le=1) # type: ignore
+    model_config = ConfigDict(extra='allow')
 
-    class Config:
-        from_attributes = True
-        #from_orm = True
+    post_id: int
+    dir: int = Field(..., ge=0, le=1)
