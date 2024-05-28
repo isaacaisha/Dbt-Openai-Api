@@ -173,7 +173,3 @@ cython_debug/
 # Ignore .env file
 .env
 .env/
-
-# Ignore Docker Compose files
-docker-compose-dev.yml
-docker-compose-dev.yml/

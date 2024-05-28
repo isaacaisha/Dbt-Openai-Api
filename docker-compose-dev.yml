@@ -1,0 +1,50 @@
+services:
+  api:
+    build: .
+    depends_on:
+      - postgres
+    ports: 
+      - "8000:8000"
+    volumes:
+      - ./:/usr/src/app:ro
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    env_file:
+      - ./.env
+    # To use pgAdmin
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ADMIN_DATABASE_URL=postgresql://postgres:Toure7Medina@localhost:5432/siisi_api
+      - ADMIN_HOST=postgres
+      - ADMIN_PORT=5432
+      - ADMIN_DATABASE=siisi_api
+      - ADMIN_USER=postgres
+      - ADMIN_PASSWORD=Toure7Medina
+      - ADMIN_OAUTH2_SECRET_KEY=09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7
+  postgres:
+    image: postgres:latest
+    environment:
+      - POSTGRES_DB=siisi_api
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+  #   # to use Heroku
+  #   environment:
+  #     - OPENAI_API_KEY=${OPENAI_API_KEY}
+  #     - ADMIN_DATABASE_URL=postgres://u12s4g1lu2ogt7:pd94e1410622cfaf5b2d31d24d1ea6a7ce841c4060118d72ec08d6cf2d8eed828@caij57unh724n3.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/ddfpq21eepge17
+  #     - ADMIN_HOST=caij57unh724n3.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com
+  #     - ADMIN_PORT=5432
+  #     - ADMIN_DATABASE=ddfpq21eepge17
+  #     - ADMIN_USER=u12s4g1lu2ogt7
+  #     - ADMIN_PASSWORD=pd94e1410622cfaf5b2d31d24d1ea6a7ce841c4060118d72ec08d6cf2d8eed828
+  #     -ADMIN_OAUTH2_SECRET_KEY=09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7
+# 
+  # postgres:
+  #   image: postgres:latest
+  #   environment:
+  #     - POSTGRES_DB=siisi_api
+  #     - POSTGRES_USER=u12s4g1lu2ogt7
+  #     - POSTGRES_PASSWORD=pd94e1410622cfaf5b2d31d24d1ea6a7ce841c4060118d72ec08d6cf2d8eed828
+
+volumes:
+  postgres-db:
