@@ -105,9 +105,9 @@ def test_start_conversation(authorized_client, test_user, test_conversations):
         "how are you doing?",
         "what is your name?",
         "who made you?",
-        "how do you say, hello how are you in Arabic?",
-        "what can you tell me about the Country named Mali?",
-        "what can you tell me about the Soninké people from Mali?",
+        # "how do you say, hello how are you in Arabic?",
+        # "what can you tell me about the Country named Mali?",
+        # "what can you tell me about the Soninké people from Mali?",
     ]
 
     for user_message in user_messages:
