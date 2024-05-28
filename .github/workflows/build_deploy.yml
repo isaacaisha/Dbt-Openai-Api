@@ -5,7 +5,7 @@ on: [push, pull_request]
 jobs:
     job1:
         environment:
-            name: dbt-openai-api
+            name: openai-dbt-api
         env:
             OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
             ADMIN_DATABASE_URL: ${{ secrets.ADMIN_DATABASE_URL }}
