@@ -8,8 +8,8 @@ from app.config import settings
 def test_root(client):
     response = client.get('/')
     print(response.json())
-    print(response.json().get(f'Be Good, Doing Good, By Acting Good\n'))
-    assert response.json().get(f'Be Good, Doing Good, By Acting Good') == "Siisi-¡!¡-Chacal 🔥👌🏿😇💪🏿🔥"
+    print(response.json().get(f'Be Good | Doing Good | By Acting Good\n'))
+    assert response.json().get(f'Be Good | Doing Good | By Acting Good') == "Siisi-¡!¡-Chacal 🔥👌🏿😇💪🏿🔥"
     assert response.status_code == 200
 
 
