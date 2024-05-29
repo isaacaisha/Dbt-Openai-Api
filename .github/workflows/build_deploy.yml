@@ -105,5 +105,5 @@ jobs:
           script: |
             cd /home/siisi/siisi-unbuntu/src
             git pull
-            sudo systemctl restart api
+            echo ${{ secrets.PROD_PASSWORD }} | sudo -S systemctl restart api
     
