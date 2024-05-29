@@ -104,7 +104,7 @@ def test_conversations(test_user, test_user2, session):
         "conversations_summary": "string",
         }, {
         "owner_id": test_user2['id'],
-        "user_message": "what can you tell me about the Country named Mali?",
+        "user_message": "what can you tell me about the Country named Indonesia?",
         "llm_response": "string",
         "conversations_summary": "string",
         }, {
