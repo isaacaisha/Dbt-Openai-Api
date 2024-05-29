@@ -43,7 +43,7 @@ app.include_router(vote.router)
 
 @app.get("/", status_code=status.HTTP_200_OK)
 async def root():
-    return {"Be Good | Doing Good | By Acting Good": "-Siisi-¡!¡-Chacal- 🔥👌🏿😇💪🏿🔥"}
+    return {"Be Good | Doing Good | By Acting Good": " ... -Siisi-¡!¡-Chacal- ... 🔥👌🏿😇💪🏿🔥"}
 
 
 if __name__ == "__main__":
